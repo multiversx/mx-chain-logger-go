@@ -2,18 +2,6 @@ package logger
 
 import "io"
 
-// Logger defines the behavior of a data logger component
-type Logger interface {
-	Trace(message string, args ...interface{})
-	Debug(message string, args ...interface{})
-	Info(message string, args ...interface{})
-	Warn(message string, args ...interface{})
-	Error(message string, args ...interface{})
-	LogIfError(err error, args ...interface{})
-	SetLevel(logLevel LogLevel)
-	IsInterfaceNil() bool
-}
-
 // LogLineHandler defines the get methods for a log line struct used by the formatter interface
 type LogLineHandler interface {
 	GetMessage() string
