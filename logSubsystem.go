@@ -77,7 +77,7 @@ func GetLogLevelPattern() string {
 	return logPattern
 }
 
-// Toggle enables / disables logger name
+// ToggleLoggerName enables / disables logger name
 func ToggleLoggerName(enable bool) {
 	logMut.Lock()
 	withLoggerName = enable
@@ -174,4 +174,14 @@ func SetDisplayByteSlice(f func(slice []byte) string) error {
 	mutDisplayByteSlice.Unlock()
 
 	return nil
+}
+
+// DisplayByteSlice converts the provided byte slice to its string representation using
+// displayByteSlice function pointer
+func DisplayByteSlice(slice []byte) string {
+	mutDisplayByteSlice.RLock()
+	f := displayByteSlice
+	mutDisplayByteSlice.RUnlock()
+
+	return f(slice)
 }
