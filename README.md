@@ -16,3 +16,7 @@ Example:
 ```
 
 ### Logs viewer
+
+```
+--level="*:INFO,processor:DEBUG" --correlation --logger-name
+```
