@@ -73,6 +73,20 @@ func GetLogLevelPattern() string {
 	return logPattern
 }
 
+// GetLoggerLogLevel gets the log level of the specified logger
+func GetLoggerLogLevel(loggerName string) LogLevel {
+	logMut.RLock()
+	defer logMut.RUnlock()
+
+	loggerFromMap, ok := loggers[loggerName]
+	if !ok {
+		return LogNone
+	}
+
+	logLevel := loggerFromMap.GetLevel()
+	return logLevel
+}
+
 // ToggleLoggerName enables / disables logger name
 func ToggleLoggerName(enable bool) {
 	logMut.Lock()
