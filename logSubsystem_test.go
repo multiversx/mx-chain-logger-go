@@ -79,6 +79,7 @@ func TestGetLoggerLogLevel(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, logger.LogInfo, logger.GetLoggerLogLevel("1"))
 	assert.Equal(t, logger.LogTrace, logger.GetLoggerLogLevel("2"))
+	assert.Equal(t, logger.LogNone, logger.GetLoggerLogLevel("42"))
 
 	// rollback to the default value
 	_ = logger.SetLogLevel("*:INFO")
