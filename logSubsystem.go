@@ -18,16 +18,12 @@ var mutDisplayByteSlice = &sync.RWMutex{}
 var displayByteSlice func(slice []byte) string
 
 func init() {
-	logMut.Lock()
 	logPattern = "*:INFO"
 	loggers = make(map[string]*logger)
 	defaultLogOut = &logOutputSubject{}
 	_ = defaultLogOut.AddObserver(os.Stdout, &ConsoleFormatter{})
-	logMut.Unlock()
 
-	mutDisplayByteSlice.Lock()
 	displayByteSlice = ToHex
-	mutDisplayByteSlice.Unlock()
 }
 
 // GetOrCreate returns a log based on the name provided, generating a new log if there is no log with provided name
