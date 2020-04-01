@@ -15,6 +15,7 @@ type Logger interface {
 	Error(message string, args ...interface{})
 	LogIfError(err error, args ...interface{})
 	SetLevel(logLevel LogLevel)
+	GetLevel() LogLevel
 	IsInterfaceNil() bool
 }
 

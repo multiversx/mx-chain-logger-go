@@ -18,16 +18,12 @@ var mutDisplayByteSlice = &sync.RWMutex{}
 var displayByteSlice func(slice []byte) string
 
 func init() {
-	logMut.Lock()
 	logPattern = "*:INFO"
 	loggers = make(map[string]*logger)
 	defaultLogOut = &logOutputSubject{}
 	_ = defaultLogOut.AddObserver(os.Stdout, &ConsoleFormatter{})
-	logMut.Unlock()
 
-	mutDisplayByteSlice.Lock()
 	displayByteSlice = ToHex
-	mutDisplayByteSlice.Unlock()
 }
 
 // GetOrCreate returns a log based on the name provided, generating a new log if there is no log with provided name
@@ -75,6 +71,20 @@ func GetLogLevelPattern() string {
 	defer logMut.RUnlock()
 
 	return logPattern
+}
+
+// GetLoggerLogLevel gets the log level of the specified logger
+func GetLoggerLogLevel(loggerName string) LogLevel {
+	logMut.RLock()
+	defer logMut.RUnlock()
+
+	loggerFromMap, ok := loggers[loggerName]
+	if !ok {
+		return LogNone
+	}
+
+	logLevel := loggerFromMap.GetLevel()
+	return logLevel
 }
 
 // ToggleLoggerName enables / disables logger name
