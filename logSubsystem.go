@@ -103,6 +103,11 @@ func IsEnabledLoggerName() bool {
 	return withLogName
 }
 
+// GetLogOutputSubject returns the default log output subject
+func GetLogOutputSubject() LogOutputHandler {
+	return defaultLogOut
+}
+
 // AddLogObserver adds a new observer (writer + formatter) to the already built-in log observers queue
 // This method is useful when adding a new output device for logs is needed (such as files, streams, API routes and so on)
 func AddLogObserver(w io.Writer, formatter Formatter) error {

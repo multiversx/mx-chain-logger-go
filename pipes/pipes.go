@@ -10,41 +10,7 @@ import (
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
 
-var _ io.Writer = (*pipeObserver)(nil)
-
 const sizeOfUint32 = 4
-
-type pipeObserver struct {
-	writePipe *os.File
-}
-
-// NewPipeObserver creates a new observer that can be attached to any logger,
-// and which writes the log data through a pipe.
-// Ultimately, the data will be read by a "pipeObserverForwarder"
-func NewPipeObserver(writePipe *os.File) *pipeObserver {
-	return &pipeObserver{
-		writePipe: writePipe,
-	}
-}
-
-// Write sends a marshalized log line through the pipe, to be captured by the forwarder
-// TODO: We have to ensure this is thread-safe
-func (observer *pipeObserver) Write(logLineMarshalized []byte) (int, error) {
-	length := len(logLineMarshalized)
-	err := observer.writeLogLineLength(length)
-	if err != nil {
-		return 0, err
-	}
-
-	return observer.writePipe.Write(logLineMarshalized)
-}
-
-func (observer *pipeObserver) writeLogLineLength(length int) error {
-	buffer := make([]byte, sizeOfUint32)
-	binary.LittleEndian.PutUint32(buffer, uint32(length))
-	_, err := observer.writePipe.Write(buffer)
-	return err
-}
 
 type pipeObserverForwarder struct {
 	readPipe    *os.File
