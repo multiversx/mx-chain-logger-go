@@ -1,6 +1,7 @@
 package pipes
 
 import (
+	"encoding/json"
 	"os"
 	"time"
 
@@ -14,8 +15,8 @@ type ParentMessenger struct {
 
 // NewParentMessenger creates a new messenger
 func NewParentMessenger(logsReader *os.File, profileWriter *os.File) *ParentMessenger {
-	receiver := NewReceiver(logsReader, &jsonMarshalizer{})
-	sender := NewSender(profileWriter, &jsonMarshalizer{})
+	receiver := NewReceiver(logsReader)
+	sender := NewSender(profileWriter)
 
 	return &ParentMessenger{
 		Messenger: *NewMessenger(receiver, sender),
@@ -24,8 +25,13 @@ func NewParentMessenger(logsReader *os.File, profileWriter *os.File) *ParentMess
 
 // ReceiveLogLine reads a log line
 func (messenger *ParentMessenger) ReceiveLogLine() (*logger.LogLine, error) {
+	buffer, err := messenger.Receive()
+	if err != nil {
+		return nil, err
+	}
+
 	wrapper := &logger.LogLineWrapper{}
-	err := messenger.Receive(wrapper)
+	err = json.Unmarshal(buffer, wrapper)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +59,12 @@ func (messenger *ParentMessenger) recoverLogLine(wrapper *logger.LogLineWrapper)
 
 // SendProfile sends a profile
 func (messenger *ParentMessenger) SendProfile(profile logger.Profile) error {
-	_, err := messenger.Send(profile)
+	buffer, err := profile.Marshal()
+	if err != nil {
+		return err
+	}
+
+	_, err = messenger.Send(buffer)
 	if err != nil {
 		return err
 	}

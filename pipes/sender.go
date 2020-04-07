@@ -3,38 +3,29 @@ package pipes
 import (
 	"encoding/binary"
 	"os"
-
-	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
 
 // Sender intermediates communication (message sending) via pipes
 type Sender struct {
-	writer      *os.File
-	marshalizer logger.Marshalizer
+	writer *os.File
 }
 
 // NewSender creates a new sender
-func NewSender(writer *os.File, marshalizer logger.Marshalizer) *Sender {
+func NewSender(writer *os.File) *Sender {
 	return &Sender{
-		writer:      writer,
-		marshalizer: marshalizer,
+		writer: writer,
 	}
 }
 
 // Send sends a message over the pipe
-func (sender *Sender) Send(message interface{}) (int, error) {
-	dataBytes, err := sender.marshalizer.Marshal(message)
+func (sender *Sender) Send(message []byte) (int, error) {
+	length := len(message)
+	err := sender.sendMessageLength(length)
 	if err != nil {
 		return 0, err
 	}
 
-	length := len(dataBytes)
-	err = sender.sendMessageLength(length)
-	if err != nil {
-		return 0, err
-	}
-
-	_, err = sender.writer.Write(dataBytes)
+	_, err = sender.writer.Write(message)
 	if err != nil {
 		return 0, err
 	}

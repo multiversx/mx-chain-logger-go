@@ -15,18 +15,13 @@ func NewMessenger(receiver *Receiver, sender *Sender) *Messenger {
 }
 
 // Send sends a message over the pipe
-func (messenger *Messenger) Send(message interface{}) (int, error) {
+func (messenger *Messenger) Send(message []byte) (int, error) {
 	return messenger.sender.Send(message)
 }
 
 // Receive receives a message, reads it from the pipe
-func (messenger *Messenger) Receive(message interface{}) error {
-	err := messenger.receiver.Receive(message)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (messenger *Messenger) Receive() ([]byte, error) {
+	return messenger.receiver.Receive()
 }
 
 // Shutdown closes the pipes
