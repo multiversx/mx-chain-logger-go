@@ -51,8 +51,6 @@ func (profile *Profile) Apply() error {
 
 	ToggleCorrelation(profile.WithCorrelation)
 	ToggleLoggerName(profile.WithLoggerName)
-	globalProfileChangeSubject.NotifyAll()
-
 	return nil
 }
 

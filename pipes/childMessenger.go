@@ -22,22 +22,17 @@ func NewChildMessenger(profileReader *os.File, logsWriter *os.File) *ChildMessen
 }
 
 // ReceiveProfile reads an incoming profile
-func (messenger *ChildMessenger) ReceiveProfile() (logger.Profile, error) {
-	profile := logger.Profile{}
+func (messenger *ChildMessenger) ReceiveProfile() (*logger.Profile, error) {
+	profile := &logger.Profile{}
 	err := messenger.Receive(profile)
 	if err != nil {
-		return logger.Profile{}, err
+		return nil, err
 	}
 
 	return profile, nil
 }
 
 // SendLogLine sends a log line
-func (messenger *ChildMessenger) SendLogLine(logLineMarshalized []byte) error {
-	_, err := messenger.Send(logLineMarshalized)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (messenger *ChildMessenger) SendLogLine(logLineMarshalized []byte) (int, error) {
+	return messenger.Send(logLineMarshalized)
 }

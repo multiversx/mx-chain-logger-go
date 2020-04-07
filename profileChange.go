@@ -1,6 +1,8 @@
 package logger
 
-import "sync"
+import (
+	"sync"
+)
 
 var globalProfileChangeSubject *profileChangeSubject
 
@@ -18,6 +20,11 @@ func UnsubscribeFromProfileChange(observer ProfileChangeObserver) {
 	globalProfileChangeSubject.unsubscribe(observer)
 }
 
+// NotifyProfileChange notifies observers about a profile change
+func NotifyProfileChange() {
+	globalProfileChangeSubject.NotifyAll()
+}
+
 type profileChangeSubject struct {
 	observers []ProfileChangeObserver
 	mutex     sync.RWMutex
@@ -32,7 +39,7 @@ func NewProfileChangeSubject() *profileChangeSubject {
 
 func (subject *profileChangeSubject) subscribe(observer ProfileChangeObserver) {
 	subject.mutex.Lock()
-	subject.observers = append(subject.observers)
+	subject.observers = append(subject.observers, observer)
 	subject.mutex.Unlock()
 }
 

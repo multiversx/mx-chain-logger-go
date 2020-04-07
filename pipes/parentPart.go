@@ -2,7 +2,6 @@ package pipes
 
 import (
 	"os"
-	"time"
 
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
@@ -75,12 +74,23 @@ func (part *parentPart) GetChildPipes() (*os.File, *os.File) {
 }
 
 func (part *parentPart) StartLoop() {
+	logger.SubscribeToProfileChange(part)
+	part.forwardProfile()
 	go part.continuouslyReadLogLines()
+}
+
+func (part *parentPart) OnProfileChanged() {
+	part.forwardProfile()
+}
+
+func (part *parentPart) forwardProfile() {
+	profile := logger.GetCurrentProfile()
+	part.messenger.SendProfile(profile)
 }
 
 func (part *parentPart) continuouslyReadLogLines() {
 	for {
-		logLine, err := part.readLogLine()
+		logLine, err := part.messenger.ReceiveLogLine()
 		if err != nil {
 			part.loggerSink.Error("continuouslyReadLogLines error", "err", err)
 			break
@@ -90,27 +100,7 @@ func (part *parentPart) continuouslyReadLogLines() {
 	}
 }
 
-func (part *parentPart) readLogLine() (*logger.LogLine, error) {
-	wrapper := &logger.LogLineWrapper{}
-	part.messenger.Receive(wrapper)
-
-	logLine := part.recoverLogLine(wrapper)
-	return logLine, nil
-}
-
-func (part *parentPart) recoverLogLine(wrapper *logger.LogLineWrapper) *logger.LogLine {
-	logLine := &logger.LogLine{
-		LoggerName:  wrapper.LoggerName,
-		Correlation: wrapper.Correlation,
-		Message:     wrapper.Message,
-		LogLevel:    logger.LogLevel(wrapper.LogLevel),
-		Args:        make([]interface{}, len(wrapper.Args)),
-		Timestamp:   time.Unix(0, wrapper.Timestamp),
-	}
-
-	for i, str := range wrapper.Args {
-		logLine.Args[i] = str
-	}
-
-	return logLine
+func (part *parentPart) Close() {
+	logger.UnsubscribeFromProfileChange(part)
+	// TODO: Also break loop, close pipes
 }

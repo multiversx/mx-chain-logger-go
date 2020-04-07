@@ -1,7 +1,6 @@
 package pipes
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -15,16 +14,26 @@ func Test_ChildToParentThroughPipes(t *testing.T) {
 	// Parent setup
 	parentPart, err := NewParentPart()
 	require.Nil(t, err)
-	parentPart.StartLoop() // StartLoop
+	parentPart.StartLoop()
 
 	// Child setup
 	profileReader, logsWriter := parentPart.GetChildPipes()
 	childOutputSubject := logger.NewLogOutputSubject()
-	childLogger := logger.NewLogger("child/foo", logger.LogTrace, childOutputSubject)
+	childLogger := logger.NewLogger("child/foo", logger.LogInfo, childOutputSubject)
 	childPart := NewChildPartWithLogOutputSubject(childOutputSubject, profileReader, logsWriter)
+	childPart.StartLoop()
 
-	//childPart.StartLoop()
-	fmt.Println(childPart)
+	// Child writes logs
+	childLogger.Trace("test")
+	childLogger.Trace("foobar")
+	childLogger.Trace("foo", "answer", 42)
+
+	time.Sleep(3 * time.Second)
+
+	err = logger.SetLogLevel("child/foo:TRACE")
+	require.Nil(t, err)
+	logger.NotifyProfileChange()
+	time.Sleep(1 * time.Second)
 
 	// Child writes logs
 	childLogger.Trace("test")

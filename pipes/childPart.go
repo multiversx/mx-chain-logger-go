@@ -25,18 +25,44 @@ func NewChildPart(profileReader *os.File, logsWriter *os.File) *childPart {
 func NewChildPartWithLogOutputSubject(outputSubject logger.LogOutputHandler, profileReader *os.File, logsWriter *os.File) *childPart {
 	messenger := NewChildMessenger(profileReader, logsWriter)
 
-	part := &childPart{
+	return &childPart{
 		messenger:     messenger,
 		outputSubject: outputSubject,
 	}
+}
 
-	logLineFormatter, _ := logger.NewLogLineWrapperFormatter(&jsonMarshalizer{})
-	outputSubject.ClearObservers()
-	outputSubject.AddObserver(part, logLineFormatter)
+func (part *childPart) StartLoop() error {
+	err := part.addAsObserver()
+	if err != nil {
+		return err
+	}
 
-	return part
+	go part.continuouslyReadProfile()
+	return nil
+}
+
+func (part *childPart) addAsObserver() error {
+	logLineFormatter, err := logger.NewLogLineWrapperFormatter(&jsonMarshalizer{})
+	if err != nil {
+		return err
+	}
+
+	part.outputSubject.ClearObservers()
+	part.outputSubject.AddObserver(part, logLineFormatter)
+	return nil
+}
+
+func (part *childPart) continuouslyReadProfile() {
+	for {
+		profile, err := part.messenger.ReceiveProfile()
+		if err != nil {
+			break
+		}
+
+		err = profile.Apply()
+	}
 }
 
 func (part *childPart) Write(logLineMarshalized []byte) (int, error) {
-	return part.messenger.Send(logLineMarshalized)
+	return part.messenger.SendLogLine(logLineMarshalized)
 }
