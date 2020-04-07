@@ -13,17 +13,14 @@ type ChildMessenger struct {
 
 // NewChildMessenger creates a new messenger
 func NewChildMessenger(profileReader *os.File, logsWriter *os.File) *ChildMessenger {
-	receiver := NewReceiver(profileReader)
-	sender := NewSender(logsWriter)
-
 	return &ChildMessenger{
-		Messenger: *NewMessenger(receiver, sender),
+		Messenger: *NewMessenger(profileReader, logsWriter),
 	}
 }
 
 // ReceiveProfile reads an incoming profile
 func (messenger *ChildMessenger) ReceiveProfile() (logger.Profile, error) {
-	buffer, err := messenger.Receive()
+	buffer, err := messenger.ReadMessage()
 	if err != nil {
 		return logger.Profile{}, err
 	}
@@ -33,5 +30,5 @@ func (messenger *ChildMessenger) ReceiveProfile() (logger.Profile, error) {
 
 // SendLogLine sends a log line
 func (messenger *ChildMessenger) SendLogLine(logLineMarshalized []byte) (int, error) {
-	return messenger.Send(logLineMarshalized)
+	return messenger.SendMessage(logLineMarshalized)
 }
