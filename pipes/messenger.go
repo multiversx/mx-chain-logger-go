@@ -43,7 +43,7 @@ func (messenger *Messenger) sendMessageLength(length int) error {
 	return err
 }
 
-// ReadMessage receives a message, reads it from the pipe
+// ReadMessage reads a message from the pipe
 func (messenger *Messenger) ReadMessage() ([]byte, error) {
 	length, err := messenger.readMessageLength()
 	if err != nil {

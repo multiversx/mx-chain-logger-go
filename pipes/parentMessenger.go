@@ -1,7 +1,6 @@
 package pipes
 
 import (
-	"encoding/json"
 	"os"
 	"time"
 
@@ -11,24 +10,26 @@ import (
 // ParentMessenger is the messenger on parent's part of the pipe
 type ParentMessenger struct {
 	Messenger
+	logLineMarshalizer logger.Marshalizer
 }
 
 // NewParentMessenger creates a new messenger
-func NewParentMessenger(logsReader *os.File, profileWriter *os.File) *ParentMessenger {
+func NewParentMessenger(logsReader *os.File, profileWriter *os.File, logLineMarshalizer logger.Marshalizer) *ParentMessenger {
 	return &ParentMessenger{
-		Messenger: *NewMessenger(logsReader, profileWriter),
+		Messenger:          *NewMessenger(logsReader, profileWriter),
+		logLineMarshalizer: logLineMarshalizer,
 	}
 }
 
-// ReceiveLogLine reads a log line
-func (messenger *ParentMessenger) ReceiveLogLine() (*logger.LogLine, error) {
+// ReadLogLine reads a log line
+func (messenger *ParentMessenger) ReadLogLine() (*logger.LogLine, error) {
 	buffer, err := messenger.ReadMessage()
 	if err != nil {
 		return nil, err
 	}
 
 	wrapper := &logger.LogLineWrapper{}
-	err = json.Unmarshal(buffer, wrapper)
+	err = messenger.logLineMarshalizer.Unmarshal(wrapper, buffer)
 	if err != nil {
 		return nil, err
 	}

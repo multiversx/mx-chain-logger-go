@@ -9,19 +9,21 @@ import (
 const loggerSinkName = "loggerSink"
 
 type parentPart struct {
-	messenger     *ParentMessenger
-	loggerSink    logger.Logger
-	logsReader    *os.File
-	logsWriter    *os.File
-	profileReader *os.File
-	profileWriter *os.File
+	messenger          *ParentMessenger
+	loggerSink         logger.Logger
+	logLineMarshalizer logger.Marshalizer
+	logsReader         *os.File
+	logsWriter         *os.File
+	profileReader      *os.File
+	profileWriter      *os.File
 }
 
 // NewParentPart -
-func NewParentPart() (*parentPart, error) {
+func NewParentPart(logLineMarshalizer logger.Marshalizer) (*parentPart, error) {
 	loggerSink := logger.GetOrCreate(loggerSinkName)
 	part := &parentPart{
-		loggerSink: loggerSink,
+		loggerSink:         loggerSink,
+		logLineMarshalizer: logLineMarshalizer,
 	}
 
 	err := part.resetMessenger()
@@ -38,7 +40,7 @@ func (part *parentPart) resetMessenger() error {
 		return err
 	}
 
-	part.messenger = NewParentMessenger(part.logsReader, part.profileWriter)
+	part.messenger = NewParentMessenger(part.logsReader, part.profileWriter, part.logLineMarshalizer)
 	return nil
 }
 
@@ -90,7 +92,7 @@ func (part *parentPart) forwardProfile() {
 
 func (part *parentPart) continuouslyReadLogLines() {
 	for {
-		logLine, err := part.messenger.ReceiveLogLine()
+		logLine, err := part.messenger.ReadLogLine()
 		if err != nil {
 			part.loggerSink.Error("continuouslyReadLogLines error", "err", err)
 			break

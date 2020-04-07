@@ -18,8 +18,8 @@ func NewChildMessenger(profileReader *os.File, logsWriter *os.File) *ChildMessen
 	}
 }
 
-// ReceiveProfile reads an incoming profile
-func (messenger *ChildMessenger) ReceiveProfile() (logger.Profile, error) {
+// ReadProfile reads an incoming profile
+func (messenger *ChildMessenger) ReadProfile() (logger.Profile, error) {
 	buffer, err := messenger.ReadMessage()
 	if err != nil {
 		return logger.Profile{}, err

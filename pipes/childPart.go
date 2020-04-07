@@ -10,24 +10,35 @@ import (
 var _ io.Writer = (*childPart)(nil)
 
 type childPart struct {
-	messenger     *ChildMessenger
-	outputSubject logger.LogOutputHandler
+	messenger          *ChildMessenger
+	outputSubject      logger.LogOutputHandler
+	logLineMarshalizer logger.Marshalizer
 }
 
 // NewChildPart -
-func NewChildPart(profileReader *os.File, logsWriter *os.File) *childPart {
+func NewChildPart(
+	profileReader *os.File,
+	logsWriter *os.File,
+	logLineMarshalizer logger.Marshalizer,
+) *childPart {
 	outputSubject := logger.GetLogOutputSubject()
-	childPart := NewChildPartWithLogOutputSubject(outputSubject, profileReader, logsWriter)
+	childPart := NewChildPartWithLogOutputSubject(outputSubject, profileReader, logsWriter, logLineMarshalizer)
 	return childPart
 }
 
 // NewChildPartWithLogOutputSubject -
-func NewChildPartWithLogOutputSubject(outputSubject logger.LogOutputHandler, profileReader *os.File, logsWriter *os.File) *childPart {
+func NewChildPartWithLogOutputSubject(
+	outputSubject logger.LogOutputHandler,
+	profileReader *os.File,
+	logsWriter *os.File,
+	logLineMarshalizer logger.Marshalizer,
+) *childPart {
 	messenger := NewChildMessenger(profileReader, logsWriter)
 
 	return &childPart{
-		messenger:     messenger,
-		outputSubject: outputSubject,
+		messenger:          messenger,
+		outputSubject:      outputSubject,
+		logLineMarshalizer: logLineMarshalizer,
 	}
 }
 
@@ -42,7 +53,7 @@ func (part *childPart) StartLoop() error {
 }
 
 func (part *childPart) addAsObserver() error {
-	logLineFormatter, err := logger.NewLogLineWrapperFormatter(&jsonMarshalizer{})
+	logLineFormatter, err := logger.NewLogLineWrapperFormatter(part.logLineMarshalizer)
 	if err != nil {
 		return err
 	}
@@ -54,7 +65,7 @@ func (part *childPart) addAsObserver() error {
 
 func (part *childPart) continuouslyReadProfile() {
 	for {
-		profile, err := part.messenger.ReceiveProfile()
+		profile, err := part.messenger.ReadProfile()
 		if err != nil {
 			break
 		}
