@@ -2,7 +2,6 @@ package pipes
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -13,28 +12,19 @@ import (
 func Test_ChildToParentThroughPipes(t *testing.T) {
 	logger.ToggleLoggerName(true)
 
-	// Parent sets up the pipes
-	readLogsFromChildFile, writeLogsToParentFile, err := os.Pipe()
-	readProfileFromParentFile, writeProfileToChildFile, err := os.Pipe()
-	require.Nil(t, err)
-	require.NotNil(t, readLogsFromChildFile)
-	require.NotNil(t, writeLogsToParentFile)
-
 	// Parent setup
-	// parentOutputSubject := logger.NewLogOutputSubject()
-	// parentOutputSubject.ClearObservers()
-	// parentOutputSubject.AddObserver(os.Stdout, &logger.ConsoleFormatter{})
-	genericLoggerSink := logger.GetOrCreate("generic")
-	parentForwarder := NewPipeObserverForwarder(readLogsFromChildFile, &jsonMarshalizer{}, genericLoggerSink)
-	parentForwarder.StartFowarding()
+	parentPart, err := NewParentPart()
+	require.Nil(t, err)
+	parentPart.StartLoop() // StartLoop
 
 	// Child setup
+	profileReader, logsWriter := parentPart.GetChildPipes()
 	childOutputSubject := logger.NewLogOutputSubject()
 	childLogger := logger.NewLogger("child/foo", logger.LogTrace, childOutputSubject)
-	childPart := NewChildPartWithLogOutputSubject(childOutputSubject, readProfileFromParentFile, writeLogsToParentFile)
+	childPart := NewChildPartWithLogOutputSubject(childOutputSubject, profileReader, logsWriter)
 
+	//childPart.StartLoop()
 	fmt.Println(childPart)
-	fmt.Println(writeProfileToChildFile)
 
 	// Child writes logs
 	childLogger.Trace("test")
