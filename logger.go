@@ -4,6 +4,8 @@ import (
 	"sync"
 )
 
+var _ Logger = (*logger)(nil)
+
 // logger is the primary structure used to interact with the productive code
 type logger struct {
 	name      string

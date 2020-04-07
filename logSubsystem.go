@@ -20,7 +20,7 @@ var displayByteSlice func(slice []byte) string
 func init() {
 	logPattern = "*:INFO"
 	loggers = make(map[string]*logger)
-	defaultLogOut = &logOutputSubject{}
+	defaultLogOut = NewLogOutputSubject()
 	_ = defaultLogOut.AddObserver(os.Stdout, &ConsoleFormatter{})
 
 	displayByteSlice = ToHex
