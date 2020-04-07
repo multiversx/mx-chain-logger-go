@@ -148,7 +148,7 @@ func NewPipeProfileForwarder(writePipe *os.File) *pipeProfileForwarder {
 }
 
 func (forwarder *pipeProfileForwarder) StartFowarding() {
-	globalProfileChangeSubject.Subscribe(forwarder)
+	SubscribeToProfileChange(forwarder)
 	forwarder.forwardProfile()
 }
 
@@ -162,7 +162,7 @@ func (forwarder *pipeProfileForwarder) forwardProfile() {
 }
 
 func (forwarder *pipeProfileForwarder) Close() {
-	globalProfileChangeSubject.Unsubscribe(forwarder)
+	UnsubscribeFromProfileChange(forwarder)
 }
 
 type pipeProfileReceiver struct {

@@ -3,14 +3,7 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
-	"sync"
 )
-
-var globalProfileChangeSubject *profileChangeSubject
-
-func init() {
-	globalProfileChangeSubject = NewProfileChangeSubject()
-}
 
 // Profile holds global logger options
 type Profile struct {
@@ -69,44 +62,4 @@ func (profile *Profile) String() string {
 		profile.WithCorrelation,
 		profile.WithLoggerName,
 	)
-}
-
-type profileChangeSubject struct {
-	observers []ProfileChangeObserver
-	mutex     sync.RWMutex
-}
-
-// NewProfileChangeSubject -
-func NewProfileChangeSubject() *profileChangeSubject {
-	return &profileChangeSubject{
-		observers: make([]ProfileChangeObserver, 0),
-	}
-}
-
-// Subscribe -
-func (subject *profileChangeSubject) Subscribe(observer ProfileChangeObserver) {
-	subject.mutex.Lock()
-	subject.observers = append(subject.observers)
-	subject.mutex.Unlock()
-}
-
-// Unsubscribe -
-func (subject *profileChangeSubject) Unsubscribe(observer ProfileChangeObserver) {
-	subject.mutex.Lock()
-	defer subject.mutex.Unlock()
-
-	for i := 0; i < len(subject.observers); i++ {
-		if subject.observers[i] == observer {
-			subject.observers = append(subject.observers[0:i], subject.observers[i+1:]...)
-		}
-	}
-}
-
-func (subject *profileChangeSubject) NotifyAll() {
-	subject.mutex.RLock()
-	defer subject.mutex.RUnlock()
-
-	for _, observer := range subject.observers {
-		observer.OnProfileChanged()
-	}
 }
