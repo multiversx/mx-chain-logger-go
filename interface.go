@@ -52,3 +52,8 @@ type Marshalizer interface {
 	Unmarshal(obj interface{}, buff []byte) error
 	IsInterfaceNil() bool
 }
+
+// ProfileChangeObserver defines the interface for observing profile changes
+type ProfileChangeObserver interface {
+	OnProfileChanged()
+}

@@ -2,6 +2,7 @@ package logger
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 	"os"
 	"time"
@@ -25,7 +26,7 @@ func NewPipeObserver(writePipe *os.File) *pipeObserver {
 }
 
 // Write sends a marshalized log line through the pipe, to be captured by the forwarder
-// We have to ensure this is thread-safe
+// TODO: We have to ensure this is thread-safe
 func (observer *pipeObserver) Write(logLineMarshalized []byte) (int, error) {
 	length := len(logLineMarshalized)
 	err := observer.writeLogLineLength(length)
@@ -133,3 +134,38 @@ func (forwarder *pipeObserverForwarder) recoverLogLine(wrapper *LogLineWrapper) 
 
 	return logLine
 }
+
+type pipeProfileForwarder struct {
+	writePipe *os.File
+}
+
+// NewPipeProfileForwarder creates a new profile forwarder,
+// which forwards logging profiles through pipe
+func NewPipeProfileForwarder(writePipe *os.File) *pipeProfileForwarder {
+	return &pipeProfileForwarder{
+		writePipe: writePipe,
+	}
+}
+
+func (forwarder *pipeProfileForwarder) StartFowarding() {
+	globalProfileChangeSubject.Subscribe(forwarder)
+	forwarder.forwardProfile()
+}
+
+func (forwarder *pipeProfileForwarder) OnProfileChanged() {
+	forwarder.forwardProfile()
+}
+
+func (forwarder *pipeProfileForwarder) forwardProfile() {
+	profile := GetCurrentProfile()
+	fmt.Println(profile)
+}
+
+func (forwarder *pipeProfileForwarder) Close() {
+	globalProfileChangeSubject.Unsubscribe(forwarder)
+}
+
+type pipeProfileReceiver struct {
+}
+
+// TODO Messenger = sender + receiver.
