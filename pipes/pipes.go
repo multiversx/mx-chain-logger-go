@@ -1,4 +1,4 @@
-package logger
+package pipes
 
 import (
 	"encoding/binary"
@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"time"
+
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
 
 var _ io.Writer = (*pipeObserver)(nil)
@@ -46,13 +48,13 @@ func (observer *pipeObserver) writeLogLineLength(length int) error {
 
 type pipeObserverForwarder struct {
 	readPipe    *os.File
-	marshalizer Marshalizer
-	loggerSink  *logger
+	marshalizer logger.Marshalizer
+	loggerSink  logger.Logger
 }
 
 // NewPipeObserverForwarder creates a new forwarder that reads log lines from a pipe
 // and sends them to a generic logger sink
-func NewPipeObserverForwarder(readPipe *os.File, marshalizer Marshalizer, loggerSink *logger) *pipeObserverForwarder {
+func NewPipeObserverForwarder(readPipe *os.File, marshalizer logger.Marshalizer, loggerSink logger.Logger) *pipeObserverForwarder {
 	return &pipeObserverForwarder{
 		readPipe:    readPipe,
 		marshalizer: marshalizer,
@@ -76,7 +78,7 @@ func (forwarder *pipeObserverForwarder) continuouslyReadLogLines() {
 	}
 }
 
-func (forwarder *pipeObserverForwarder) readLogLine() (*LogLine, error) {
+func (forwarder *pipeObserverForwarder) readLogLine() (*logger.LogLine, error) {
 	length, err := forwarder.readLogLineLength()
 	if err != nil {
 		return nil, err
@@ -102,14 +104,14 @@ func (forwarder *pipeObserverForwarder) readLogLineLength() (uint32, error) {
 	return length, nil
 }
 
-func (forwarder *pipeObserverForwarder) readLogLinePayload(length uint32) (*LogLineWrapper, error) {
+func (forwarder *pipeObserverForwarder) readLogLinePayload(length uint32) (*logger.LogLineWrapper, error) {
 	buffer := make([]byte, length)
 	_, err := io.ReadFull(forwarder.readPipe, buffer)
 	if err != nil {
 		return nil, err
 	}
 
-	logLine := &LogLineWrapper{}
+	logLine := &logger.LogLineWrapper{}
 	err = forwarder.marshalizer.Unmarshal(logLine, buffer)
 	if err != nil {
 		return nil, err
@@ -118,12 +120,12 @@ func (forwarder *pipeObserverForwarder) readLogLinePayload(length uint32) (*LogL
 	return logLine, nil
 }
 
-func (forwarder *pipeObserverForwarder) recoverLogLine(wrapper *LogLineWrapper) *LogLine {
-	logLine := &LogLine{
+func (forwarder *pipeObserverForwarder) recoverLogLine(wrapper *logger.LogLineWrapper) *logger.LogLine {
+	logLine := &logger.LogLine{
 		LoggerName:  wrapper.LoggerName,
 		Correlation: wrapper.Correlation,
 		Message:     wrapper.Message,
-		LogLevel:    LogLevel(wrapper.LogLevel),
+		LogLevel:    logger.LogLevel(wrapper.LogLevel),
 		Args:        make([]interface{}, len(wrapper.Args)),
 		Timestamp:   time.Unix(0, wrapper.Timestamp),
 	}
@@ -148,7 +150,7 @@ func NewPipeProfileForwarder(writePipe *os.File) *pipeProfileForwarder {
 }
 
 func (forwarder *pipeProfileForwarder) StartFowarding() {
-	SubscribeToProfileChange(forwarder)
+	logger.SubscribeToProfileChange(forwarder)
 	forwarder.forwardProfile()
 }
 
@@ -157,12 +159,12 @@ func (forwarder *pipeProfileForwarder) OnProfileChanged() {
 }
 
 func (forwarder *pipeProfileForwarder) forwardProfile() {
-	profile := GetCurrentProfile()
+	profile := logger.GetCurrentProfile()
 	fmt.Println(profile)
 }
 
 func (forwarder *pipeProfileForwarder) Close() {
-	UnsubscribeFromProfileChange(forwarder)
+	logger.UnsubscribeFromProfileChange(forwarder)
 }
 
 type pipeProfileReceiver struct {

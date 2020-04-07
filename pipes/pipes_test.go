@@ -1,4 +1,4 @@
-package logger
+package pipes
 
 import (
 	"encoding/json"
@@ -6,11 +6,12 @@ import (
 	"testing"
 	"time"
 
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_ChildToParentThroughPipes(t *testing.T) {
-	ToggleLoggerName(true)
+	logger.ToggleLoggerName(true)
 
 	// Parent sets up the pipes
 	readLogsFromChildFile, writeLogsToParentFile, err := os.Pipe()
@@ -19,20 +20,20 @@ func Test_ChildToParentThroughPipes(t *testing.T) {
 	require.NotNil(t, writeLogsToParentFile)
 
 	// Parent setup
-	parentOutputSubject := NewLogOutputSubject()
+	parentOutputSubject := logger.NewLogOutputSubject()
 	parentOutputSubject.ClearObservers()
-	parentOutputSubject.AddObserver(os.Stdout, &ConsoleFormatter{})
-	genericLoggerSink := GetOrCreate("generic")
+	parentOutputSubject.AddObserver(os.Stdout, &logger.ConsoleFormatter{})
+	genericLoggerSink := logger.GetOrCreate("generic")
 	parentForwarder := NewPipeObserverForwarder(readLogsFromChildFile, &jsonMarshalizer{}, genericLoggerSink)
 	parentForwarder.StartFowarding()
 
 	// Child setup
 	pipeObserver := NewPipeObserver(writeLogsToParentFile)
-	childOutputSubject := NewLogOutputSubject()
+	childOutputSubject := logger.NewLogOutputSubject()
 	childOutputSubject.ClearObservers()
-	logLineFormatter, _ := NewLogLineWrapperFormatter(&jsonMarshalizer{})
+	logLineFormatter, _ := logger.NewLogLineWrapperFormatter(&jsonMarshalizer{})
 	childOutputSubject.AddObserver(pipeObserver, logLineFormatter)
-	childLogger := newLogger("child/foo", LogTrace, childOutputSubject)
+	childLogger := logger.NewLogger("child/foo", logger.LogTrace, childOutputSubject)
 
 	// Child writes logs
 	childLogger.Trace("test")

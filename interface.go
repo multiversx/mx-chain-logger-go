@@ -14,6 +14,7 @@ type Logger interface {
 	Warn(message string, args ...interface{})
 	Error(message string, args ...interface{})
 	LogIfError(err error, args ...interface{})
+	Log(line *LogLine)
 	SetLevel(logLevel LogLevel)
 	GetLevel() LogLevel
 	IsInterfaceNil() bool
