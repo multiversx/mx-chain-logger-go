@@ -5,7 +5,7 @@ import (
 
 	"testing"
 
-	"github.com/ElrondNetwork/elrond-go-logger"
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/stretchr/testify/assert"
 )
@@ -257,4 +257,16 @@ func TestLogger_LogShouldWork(t *testing.T) {
 	log.Log(&logger.LogLine{})
 
 	assert.Equal(t, int32(1), atomic.LoadInt32(numCalls))
+}
+
+func Benchmark_ManyIneffectiveTraces(b *testing.B) {
+	log := logger.GetOrCreate("foobar")
+	log.SetLevel(logger.LogInfo)
+
+	// Way under 1 millisecond, which is very good
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < 25000; j++ {
+			log.Trace("foobar")
+		}
+	}
 }
