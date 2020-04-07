@@ -33,7 +33,7 @@ func GetOrCreate(name string) *logger {
 
 	loggerFromMap, ok := loggers[name]
 	if !ok {
-		loggerFromMap = newLogger(name, defaultLogLevel, defaultLogOut)
+		loggerFromMap = NewLogger(name, defaultLogLevel, defaultLogOut)
 		loggers[name] = loggerFromMap
 	}
 

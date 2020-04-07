@@ -14,8 +14,8 @@ type logger struct {
 	logOutput LogOutputHandler
 }
 
-// newLogger create a new logger instance
-func newLogger(name string, logLevel LogLevel, logOutput LogOutputHandler) *logger {
+// NewLogger create a new logger instance
+func NewLogger(name string, logLevel LogLevel, logOutput LogOutputHandler) *logger {
 	log := &logger{
 		name:      name,
 		logLevel:  logLevel,
