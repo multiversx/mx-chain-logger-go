@@ -45,15 +45,21 @@ func Test_ChilProcessLogsToParentProcess(t *testing.T) {
 
 	command := exec.Command("./testchild")
 	command.ExtraFiles = []*os.File{profileReader, logsWriter}
+
+	childStdout, err := command.StdoutPipe()
+	require.Nil(t, err)
+	arwenStderr, err := command.StderrPipe()
+	require.Nil(t, err)
+
 	err = command.Start()
 	require.Nil(t, err)
 
 	part.StartLoop()
+	part.ContinuouslyReadTextualOutput(childStdout, arwenStderr, "child-tag")
 
 	time.Sleep(1 * time.Second)
 
 	logger.ToggleLoggerName(true)
-	logger.ToggleCorrelation(true)
 	logger.SetLogLevel("*:TRACE")
 	logger.NotifyProfileChange()
 

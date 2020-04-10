@@ -1,16 +1,21 @@
 package pipes
 
 import (
+	"bufio"
+	"io"
 	"os"
+	"strings"
 
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
 
-const loggerSinkName = "loggerSink"
+const logLinesSinkName = "logLinesSink"
+const textOutputSinkName = "textOutputSink"
 
 type parentPart struct {
 	messenger          *ParentMessenger
-	loggerSink         logger.Logger
+	logLinesSink       logger.Logger
+	textOutputSink     logger.Logger
 	logLineMarshalizer logger.Marshalizer
 	logsReader         *os.File
 	logsWriter         *os.File
@@ -20,9 +25,9 @@ type parentPart struct {
 
 // NewParentPart -
 func NewParentPart(logLineMarshalizer logger.Marshalizer) (*parentPart, error) {
-	loggerSink := logger.GetOrCreate(loggerSinkName)
 	part := &parentPart{
-		loggerSink:         loggerSink,
+		logLinesSink:       logger.GetOrCreate(logLinesSinkName),
+		textOutputSink:     logger.GetOrCreate(textOutputSinkName),
 		logLineMarshalizer: logLineMarshalizer,
 	}
 
@@ -94,15 +99,45 @@ func (part *parentPart) continuouslyReadLogLines() {
 	for {
 		logLine, err := part.messenger.ReadLogLine()
 		if err != nil {
-			part.loggerSink.Error("continuouslyReadLogLines error", "err", err)
+			part.logLinesSink.Error("continuouslyReadLogLines error", "err", err)
 			break
 		}
 
-		part.loggerSink.Log(logLine)
+		part.logLinesSink.Log(logLine)
 	}
+}
+
+func (part *parentPart) ContinuouslyReadTextualOutput(childStdout io.Reader, childStderr io.Reader, tag string) {
+	stdoutReader := bufio.NewReader(childStdout)
+	stderrReader := bufio.NewReader(childStderr)
+
+	go func() {
+		for {
+			line, err := stdoutReader.ReadString('\n')
+			if err != nil {
+				break
+			}
+
+			line = strings.TrimSpace(line)
+			part.textOutputSink.Trace(tag, "line", line)
+		}
+	}()
+
+	go func() {
+		for {
+			line, err := stderrReader.ReadString('\n')
+			if err != nil {
+				break
+			}
+
+			line = strings.TrimSpace(line)
+			part.textOutputSink.Error(tag, "line", line)
+		}
+	}()
 }
 
 func (part *parentPart) Close() {
 	logger.UnsubscribeFromProfileChange(part)
-	// TODO: Also break loop, close pipes
+	// TODO: Also break loop, close pipes.
+	// Write test
 }

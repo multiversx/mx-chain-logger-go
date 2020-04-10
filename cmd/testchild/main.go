@@ -52,6 +52,9 @@ func main() {
 	fooLog.Trace("foo-trace-yes")
 	barLog.Trace("bar-trace-yes")
 
+	fmt.Println("Here's some stdout")
+	fmt.Fprintln(os.Stderr, "Here's some stderr")
+
 	time.Sleep(3 * time.Second)
 }
 
