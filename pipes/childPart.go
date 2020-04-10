@@ -9,6 +9,8 @@ import (
 
 var _ io.Writer = (*childPart)(nil)
 
+var log = logger.GetOrCreate("pipes/childPart")
+
 type childPart struct {
 	messenger          *ChildMessenger
 	outputSubject      logger.LogOutputHandler
@@ -71,9 +73,11 @@ func (part *childPart) continuouslyReadProfile() {
 		}
 
 		err = profile.Apply()
+		log.Info("Profile change applied.")
 	}
 }
 
 func (part *childPart) Write(logLineMarshalized []byte) (int, error) {
+	// TODO: Concurrent-safe?
 	return part.messenger.SendLogLine(logLineMarshalized)
 }

@@ -1,6 +1,8 @@
 package pipes
 
 import (
+	"os"
+	"os/exec"
 	"testing"
 	"time"
 
@@ -9,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_ChildToParentThroughPipes(t *testing.T) {
+func Test_ChildPartLogsToParentPart(t *testing.T) {
 	logger.ToggleLoggerName(true)
 
 	logLineMarshalizer := &marshal.JSONMarshalizer{}
@@ -32,4 +34,28 @@ func Test_ChildToParentThroughPipes(t *testing.T) {
 	childLogger.Trace("foo", "answer", 42)
 
 	time.Sleep(1 * time.Second)
+}
+
+func Test_ChilProcessLogsToParentProcess(t *testing.T) {
+	logLineMarshalizer := &marshal.JSONMarshalizer{}
+
+	part, err := NewParentPart(logLineMarshalizer)
+	require.Nil(t, err)
+	profileReader, logsWriter := part.GetChildPipes()
+
+	command := exec.Command("./testchild")
+	command.ExtraFiles = []*os.File{profileReader, logsWriter}
+	err = command.Start()
+	require.Nil(t, err)
+
+	part.StartLoop()
+
+	time.Sleep(1 * time.Second)
+
+	logger.ToggleLoggerName(true)
+	logger.ToggleCorrelation(true)
+	logger.SetLogLevel("*:TRACE")
+	logger.NotifyProfileChange()
+
+	time.Sleep(5 * time.Second)
 }

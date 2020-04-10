@@ -4,7 +4,9 @@ import (
 	"fmt"
 	goLog "log"
 	"os"
+	"time"
 
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/marshal"
 	"github.com/ElrondNetwork/elrond-go-logger/pipes"
 )
@@ -30,6 +32,27 @@ func main() {
 	if err != nil {
 		goLog.Fatal("Ended loop")
 	}
+
+	fooLog := logger.GetOrCreate("foo")
+	barLog := logger.GetOrCreate("bar")
+
+	fooLog.Info("foo-info")
+	barLog.Info("bar-info")
+
+	fooLog.Trace("foo-trace-no")
+	barLog.Trace("bar-trace-no")
+
+	go func() {
+		fooLog.Info("foo-in-go")
+		barLog.Info("bar-in-go")
+	}()
+
+	time.Sleep(3 * time.Second)
+
+	fooLog.Trace("foo-trace-yes")
+	barLog.Trace("bar-trace-yes")
+
+	time.Sleep(3 * time.Second)
 }
 
 func getPipeFile(fileDescriptor uintptr) *os.File {
