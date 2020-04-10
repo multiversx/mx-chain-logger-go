@@ -20,6 +20,8 @@ part.StartLoop()
 
 `StartLoop` will continuously read log lines from the child  (pipe `logsWriter`) on a separate goroutine. Furthermore, the parent part also forwards log profile changes to the child process (through pipe `profileReader`).
 
+Note that the parent is responsible to call `logger.NotifyProfileChange()` when it applies a new log profile (whether by sole choice or when instructed by a logviewer).
+
 ## The child process
 
 ```
