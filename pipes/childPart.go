@@ -24,19 +24,8 @@ func NewChildPart(
 	logsWriter *os.File,
 	logLineMarshalizer logger.Marshalizer,
 ) *childPart {
-	outputSubject := logger.GetLogOutputSubject()
-	childPart := NewChildPartWithLogOutputSubject(outputSubject, profileReader, logsWriter, logLineMarshalizer)
-	return childPart
-}
-
-// NewChildPartWithLogOutputSubject -
-func NewChildPartWithLogOutputSubject(
-	outputSubject logger.LogOutputHandler,
-	profileReader *os.File,
-	logsWriter *os.File,
-	logLineMarshalizer logger.Marshalizer,
-) *childPart {
 	messenger := NewChildMessenger(profileReader, logsWriter)
+	outputSubject := logger.GetLogOutputSubject()
 
 	return &childPart{
 		messenger:          messenger,
