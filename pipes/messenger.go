@@ -4,12 +4,14 @@ import (
 	"encoding/binary"
 	"io"
 	"os"
+	"sync"
 )
 
 // Messenger intermediates communication (message exchange) via pipes
 type Messenger struct {
-	reader *os.File
-	writer *os.File
+	reader      *os.File
+	writer      *os.File
+	writerMutex sync.Mutex
 }
 
 // NewMessenger creates a new messenger
@@ -22,6 +24,9 @@ func NewMessenger(reader *os.File, writer *os.File) *Messenger {
 
 // SendMessage sends a message over the pipe
 func (messenger *Messenger) SendMessage(message []byte) (int, error) {
+	messenger.writerMutex.Lock()
+	defer messenger.writerMutex.Unlock()
+
 	length := len(message)
 	err := messenger.sendMessageLength(length)
 	if err != nil {
@@ -44,6 +49,7 @@ func (messenger *Messenger) sendMessageLength(length int) error {
 }
 
 // ReadMessage reads a message from the pipe
+// Reading messages is normally performed from a single go-routine, no mutex required
 func (messenger *Messenger) ReadMessage() ([]byte, error) {
 	length, err := messenger.readMessageLength()
 	if err != nil {

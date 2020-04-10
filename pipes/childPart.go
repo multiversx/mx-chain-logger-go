@@ -78,6 +78,5 @@ func (part *childPart) continuouslyReadProfile() {
 }
 
 func (part *childPart) Write(logLineMarshalized []byte) (int, error) {
-	// TODO: Concurrent-safe?
 	return part.messenger.SendLogLine(logLineMarshalized)
 }
