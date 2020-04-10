@@ -36,7 +36,7 @@ func Test_ChildPartLogsToParentPart(t *testing.T) {
 	time.Sleep(1 * time.Second)
 }
 
-func Test_ChilProcessLogsToParentProcess(t *testing.T) {
+func Test_ChildProcessLogsToParentProcess(t *testing.T) {
 	// Record logs by means of a logs gatherer, so we can apply assertions afterwards
 	gatherer := &dummyLogsGatherer{}
 	logOutputSubject := logger.GetLogOutputSubject()
