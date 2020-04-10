@@ -8,7 +8,6 @@ import (
 )
 
 var _ io.Writer = (*childPart)(nil)
-var _ io.Closer = (*childPart)(nil)
 
 var log = logger.GetOrCreate("pipes/childPart")
 
@@ -71,6 +70,5 @@ func (part *childPart) Write(logLineMarshalized []byte) (int, error) {
 	return part.messenger.SendLogLine(logLineMarshalized)
 }
 
-func (part *childPart) Close() error {
-	return part.messenger.Close()
+func (part *childPart) Close() {
 }

@@ -79,18 +79,3 @@ func (messenger *Messenger) readMessagePayload(length int) ([]byte, error) {
 
 	return buffer, nil
 }
-
-// Close closes the pipes
-func (messenger *Messenger) Close() error {
-	errReader := messenger.reader.Close()
-	errWriter := messenger.writer.Close()
-
-	if errReader != nil {
-		return errReader
-	}
-	if errWriter != nil {
-		return errWriter
-	}
-
-	return nil
-}

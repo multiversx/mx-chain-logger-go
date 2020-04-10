@@ -12,8 +12,6 @@ import (
 const logLinesSinkName = "logLinesSink"
 const textOutputSinkName = "textOutputSink"
 
-var _ io.Closer = (*parentPart)(nil)
-
 type parentPart struct {
 	messenger          *ParentMessenger
 	logLinesSink       logger.Logger
@@ -33,27 +31,17 @@ func NewParentPart(logLineMarshalizer logger.Marshalizer) (*parentPart, error) {
 		logLineMarshalizer: logLineMarshalizer,
 	}
 
-	err := part.resetMessenger()
+	err := part.initializePipes()
 	if err != nil {
 		return nil, err
 	}
 
+	part.initializeMessenger()
+
 	return part, nil
 }
 
-func (part *parentPart) resetMessenger() error {
-	err := part.resetPipes()
-	if err != nil {
-		return err
-	}
-
-	part.messenger = NewParentMessenger(part.logsReader, part.profileWriter, part.logLineMarshalizer)
-	return nil
-}
-
-func (part *parentPart) resetPipes() error {
-	part.closePipes()
-
+func (part *parentPart) initializePipes() error {
 	var err error
 
 	part.logsReader, part.logsWriter, err = os.Pipe()
@@ -69,17 +57,8 @@ func (part *parentPart) resetPipes() error {
 	return nil
 }
 
-func (part *parentPart) closePipes() {
-	closePipe(part.logsReader)
-	closePipe(part.logsWriter)
-	closePipe(part.profileReader)
-	closePipe(part.profileWriter)
-}
-
-func closePipe(file *os.File) {
-	if file != nil {
-		_ = file.Close()
-	}
+func (part *parentPart) initializeMessenger() {
+	part.messenger = NewParentMessenger(part.logsReader, part.profileWriter, part.logLineMarshalizer)
 }
 
 func (part *parentPart) GetChildPipes() (*os.File, *os.File) {
@@ -142,7 +121,11 @@ func (part *parentPart) ContinuouslyReadTextualOutput(childStdout io.Reader, chi
 	}()
 }
 
-func (part *parentPart) Close() error {
+func (part *parentPart) Close() {
 	logger.UnsubscribeFromProfileChange(part)
-	return part.messenger.Close()
+
+	_ = part.logsReader.Close()
+	_ = part.logsWriter.Close()
+	_ = part.profileReader.Close()
+	_ = part.profileWriter.Close()
 }
