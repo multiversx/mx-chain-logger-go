@@ -13,19 +13,23 @@ const logLinesSinkName = "logLinesSink"
 const textOutputSinkName = "textOutputSink"
 
 type parentPart struct {
+	childName          string
 	messenger          *ParentMessenger
 	logLinesSink       logger.Logger
 	textOutputSink     logger.Logger
 	logLineMarshalizer logger.Marshalizer
-	logsReader         *os.File
-	logsWriter         *os.File
-	profileReader      *os.File
-	profileWriter      *os.File
+	loopState          partLoopState
+
+	logsReader    *os.File
+	logsWriter    *os.File
+	profileReader *os.File
+	profileWriter *os.File
 }
 
 // NewParentPart creates a new logs receiver part (in the parent process)
-func NewParentPart(logLineMarshalizer logger.Marshalizer) (*parentPart, error) {
+func NewParentPart(childName string, logLineMarshalizer logger.Marshalizer) (*parentPart, error) {
 	part := &parentPart{
+		childName:          childName,
 		logLinesSink:       logger.GetOrCreate(logLinesSinkName),
 		textOutputSink:     logger.GetOrCreate(textOutputSinkName),
 		logLineMarshalizer: logLineMarshalizer,
@@ -65,10 +69,16 @@ func (part *parentPart) GetChildPipes() (*os.File, *os.File) {
 	return part.profileReader, part.logsWriter
 }
 
-func (part *parentPart) StartLoop() {
+func (part *parentPart) StartLoop(childStdout io.Reader, childStderr io.Reader) error {
+	if !part.loopState.isInit() {
+		return ErrInvalidOperationGivenPartLoopState
+	}
+
 	logger.SubscribeToProfileChange(part)
 	part.forwardProfile()
-	go part.continuouslyReadLogLines()
+	part.continuouslyRead(childStdout, childStderr)
+	part.loopState.setRunning()
+	return nil
 }
 
 func (part *parentPart) OnProfileChanged() {
@@ -80,48 +90,61 @@ func (part *parentPart) forwardProfile() {
 	part.messenger.SendProfile(profile)
 }
 
-func (part *parentPart) continuouslyReadLogLines() {
-	for {
-		logLine, err := part.messenger.ReadLogLine()
-		if err != nil {
-			part.logLinesSink.Error("continuouslyReadLogLines error", "err", err)
-			break
-		}
-
-		part.logLinesSink.Log(logLine)
-	}
-}
-
-func (part *parentPart) ContinuouslyReadTextualOutput(childStdout io.Reader, childStderr io.Reader, tag string) {
+func (part *parentPart) continuouslyRead(childStdout io.Reader, childStderr io.Reader) {
 	stdoutReader := bufio.NewReader(childStdout)
 	stderrReader := bufio.NewReader(childStderr)
 
 	go func() {
 		for {
-			line, err := stdoutReader.ReadString('\n')
-			if err != nil {
+			if !part.loopState.isRunning() {
 				break
 			}
 
-			line = strings.TrimSpace(line)
-			part.textOutputSink.Trace(tag, "line", line)
+			logLine, err := part.messenger.ReadLogLine()
+			if err != nil {
+				part.logLinesSink.Error("continuouslyReadLogLines error", "err", err)
+				break
+			}
+
+			part.logLinesSink.Log(logLine)
 		}
 	}()
 
 	go func() {
 		for {
-			line, err := stderrReader.ReadString('\n')
+			if !part.loopState.isRunning() {
+				break
+			}
+
+			textLine, err := stdoutReader.ReadString('\n')
 			if err != nil {
 				break
 			}
 
-			line = strings.TrimSpace(line)
-			part.textOutputSink.Error(tag, "line", line)
+			textLine = strings.TrimSpace(textLine)
+			part.textOutputSink.Trace(part.childName, "line", textLine)
+		}
+	}()
+
+	go func() {
+		for {
+			if !part.loopState.isRunning() {
+				break
+			}
+
+			textLine, err := stderrReader.ReadString('\n')
+			if err != nil {
+				break
+			}
+
+			textLine = strings.TrimSpace(textLine)
+			part.textOutputSink.Error(part.childName, "line", textLine)
 		}
 	}()
 }
 
-func (part *parentPart) Close() {
+func (part *parentPart) StopLoop() {
+	part.loopState.setStopped()
 	logger.UnsubscribeFromProfileChange(part)
 
 	_ = part.logsReader.Close()

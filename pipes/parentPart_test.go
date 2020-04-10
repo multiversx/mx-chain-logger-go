@@ -17,7 +17,7 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 	logOutputSubject := logger.GetLogOutputSubject()
 	logOutputSubject.AddObserver(gatherer, gatherer)
 
-	part, err := NewParentPart(&marshal.JSONMarshalizer{})
+	part, err := NewParentPart("child-name", &marshal.JSONMarshalizer{})
 	require.Nil(t, err)
 	profileReader, logsWriter := part.GetChildPipes()
 
@@ -32,9 +32,9 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 	err = command.Start()
 	require.Nil(t, err)
 
-	part.StartLoop()
-	part.ContinuouslyReadTextualOutput(childStdout, arwenStderr, "child-tag")
+	part.StartLoop(childStdout, arwenStderr)
 
+	// TODO: Wait after a certain message
 	time.Sleep(1 * time.Second)
 	require.True(t, gatherer.ContainsLogLine("foo", logger.LogInfo, "foo-info"))
 	require.True(t, gatherer.ContainsLogLine("bar", logger.LogInfo, "bar-info"))
@@ -48,11 +48,12 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 	logger.SetLogLevel("*:TRACE")
 	logger.NotifyProfileChange()
 
-	time.Sleep(1 * time.Second)
+	// TODO: Wait after a certain message
+	time.Sleep(2 * time.Second)
 	require.True(t, gatherer.ContainsLogLine("foo", logger.LogTrace, "foo-trace-yes"))
 	require.True(t, gatherer.ContainsLogLine("bar", logger.LogTrace, "bar-trace-yes"))
-	require.True(t, gatherer.ContainsLogLine(textOutputSinkName, logger.LogTrace, "child-tag"))
-	require.True(t, gatherer.ContainsLogLine(textOutputSinkName, logger.LogError, "child-tag"))
+	require.True(t, gatherer.ContainsLogLine(textOutputSinkName, logger.LogTrace, "child-name"))
+	require.True(t, gatherer.ContainsLogLine(textOutputSinkName, logger.LogError, "child-name"))
 	require.True(t, gatherer.ContainsText("Here's some stderr"))
 	require.True(t, gatherer.ContainsText("Here's some stdout"))
 }
