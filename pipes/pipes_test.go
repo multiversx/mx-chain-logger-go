@@ -65,5 +65,5 @@ func Test_ChilProcessLogsToParentProcess(t *testing.T) {
 	// TODO: Who calls this?
 	logger.NotifyProfileChange()
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(1 * time.Second)
 }

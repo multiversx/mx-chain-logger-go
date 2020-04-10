@@ -47,7 +47,7 @@ func main() {
 		barLog.Info("bar-in-go")
 	}()
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 
 	fooLog.Trace("foo-trace-yes")
 	barLog.Trace("bar-trace-yes")
@@ -55,7 +55,7 @@ func main() {
 	fmt.Println("Here's some stdout")
 	fmt.Fprintln(os.Stderr, "Here's some stderr")
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 }
 
 func getPipeFile(fileDescriptor uintptr) *os.File {
