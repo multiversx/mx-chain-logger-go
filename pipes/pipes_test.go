@@ -61,6 +61,8 @@ func Test_ChilProcessLogsToParentProcess(t *testing.T) {
 
 	logger.ToggleLoggerName(true)
 	logger.SetLogLevel("*:TRACE")
+
+	// TODO: Who calls this?
 	logger.NotifyProfileChange()
 
 	time.Sleep(5 * time.Second)

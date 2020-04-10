@@ -44,3 +44,5 @@ childStdout, _:= command.StdoutPipe()
 arwenStderr, _ := command.StderrPipe()
 parentPart.ContinuouslyReadTextualOutput(childStdout, arwenStderr, "child-tag")
 ```
+
+`Stdout` will be logged with `trace` level, while `stderr` with `error` level.
