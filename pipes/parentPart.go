@@ -12,6 +12,8 @@ import (
 const logLinesSinkName = "logLinesSink"
 const textOutputSinkName = "textOutputSink"
 
+var _ io.Closer = (*parentPart)(nil)
+
 type parentPart struct {
 	messenger          *ParentMessenger
 	logLinesSink       logger.Logger
@@ -23,7 +25,7 @@ type parentPart struct {
 	profileWriter      *os.File
 }
 
-// NewParentPart -
+// NewParentPart creates a new logs receiver part (in the parent process)
 func NewParentPart(logLineMarshalizer logger.Marshalizer) (*parentPart, error) {
 	part := &parentPart{
 		logLinesSink:       logger.GetOrCreate(logLinesSinkName),
@@ -50,10 +52,7 @@ func (part *parentPart) resetMessenger() error {
 }
 
 func (part *parentPart) resetPipes() error {
-	closeFile(part.logsReader)
-	closeFile(part.logsWriter)
-	closeFile(part.profileReader)
-	closeFile(part.profileWriter)
+	part.closePipes()
 
 	var err error
 
@@ -70,7 +69,14 @@ func (part *parentPart) resetPipes() error {
 	return nil
 }
 
-func closeFile(file *os.File) {
+func (part *parentPart) closePipes() {
+	closePipe(part.logsReader)
+	closePipe(part.logsWriter)
+	closePipe(part.profileReader)
+	closePipe(part.profileWriter)
+}
+
+func closePipe(file *os.File) {
 	if file != nil {
 		_ = file.Close()
 	}
@@ -136,8 +142,7 @@ func (part *parentPart) ContinuouslyReadTextualOutput(childStdout io.Reader, chi
 	}()
 }
 
-func (part *parentPart) Close() {
+func (part *parentPart) Close() error {
 	logger.UnsubscribeFromProfileChange(part)
-	// TODO: Also break loop, close pipes.
-	// Write test
+	return part.messenger.Close()
 }

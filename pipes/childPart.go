@@ -8,6 +8,7 @@ import (
 )
 
 var _ io.Writer = (*childPart)(nil)
+var _ io.Closer = (*childPart)(nil)
 
 var log = logger.GetOrCreate("pipes/childPart")
 
@@ -17,7 +18,7 @@ type childPart struct {
 	logLineMarshalizer logger.Marshalizer
 }
 
-// NewChildPart -
+// NewChildPart creates a new logs sender part (in the child process)
 func NewChildPart(
 	profileReader *os.File,
 	logsWriter *os.File,
@@ -79,4 +80,8 @@ func (part *childPart) continuouslyReadProfile() {
 
 func (part *childPart) Write(logLineMarshalized []byte) (int, error) {
 	return part.messenger.SendLogLine(logLineMarshalized)
+}
+
+func (part *childPart) Close() error {
+	return part.messenger.Close()
 }
