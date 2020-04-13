@@ -1,4 +1,4 @@
-package pipes
+package mock
 
 import (
 	"strings"
@@ -7,17 +7,20 @@ import (
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
 
-type dummyLogsGatherer struct {
+// DummyLogsGatherer -
+type DummyLogsGatherer struct {
 	lines []logger.LogLineHandler
 	text  strings.Builder
 	mutex sync.RWMutex
 }
 
-func (gatherer *dummyLogsGatherer) Write(p []byte) (n int, err error) {
-	return 42, nil
+// Write -
+func (gatherer *DummyLogsGatherer) Write(p []byte) (n int, err error) {
+	return 0, nil
 }
 
-func (gatherer *dummyLogsGatherer) Output(line logger.LogLineHandler) []byte {
+// Output -
+func (gatherer *DummyLogsGatherer) Output(line logger.LogLineHandler) []byte {
 	gatherer.mutex.Lock()
 	defer gatherer.mutex.Unlock()
 
@@ -26,7 +29,7 @@ func (gatherer *dummyLogsGatherer) Output(line logger.LogLineHandler) []byte {
 	return make([]byte, 0)
 }
 
-func (gatherer *dummyLogsGatherer) gatherText(line logger.LogLineHandler) {
+func (gatherer *DummyLogsGatherer) gatherText(line logger.LogLineHandler) {
 	gatherer.text.WriteString(line.GetMessage() + "\n")
 
 	for _, arg := range line.GetArgs() {
@@ -34,7 +37,16 @@ func (gatherer *dummyLogsGatherer) gatherText(line logger.LogLineHandler) {
 	}
 }
 
-func (gatherer *dummyLogsGatherer) ContainsText(str string) bool {
+// GetText -
+func (gatherer *DummyLogsGatherer) GetText() string {
+	gatherer.mutex.RLock()
+	defer gatherer.mutex.RUnlock()
+
+	return gatherer.text.String()
+}
+
+// ContainsText -
+func (gatherer *DummyLogsGatherer) ContainsText(str string) bool {
 	gatherer.mutex.RLock()
 	defer gatherer.mutex.RUnlock()
 
@@ -42,7 +54,8 @@ func (gatherer *dummyLogsGatherer) ContainsText(str string) bool {
 	return strings.Contains(text, str)
 }
 
-func (gatherer *dummyLogsGatherer) ContainsLogLine(loggerName string, level logger.LogLevel, message string) bool {
+// ContainsLogLine -
+func (gatherer *DummyLogsGatherer) ContainsLogLine(loggerName string, level logger.LogLevel, message string) bool {
 	gatherer.mutex.RLock()
 	defer gatherer.mutex.RUnlock()
 
@@ -59,6 +72,7 @@ func (gatherer *dummyLogsGatherer) ContainsLogLine(loggerName string, level logg
 	return false
 }
 
-func (gatherer *dummyLogsGatherer) IsInterfaceNil() bool {
+// IsInterfaceNil -
+func (gatherer *DummyLogsGatherer) IsInterfaceNil() bool {
 	return gatherer == nil
 }

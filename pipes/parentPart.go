@@ -74,10 +74,11 @@ func (part *parentPart) StartLoop(childStdout io.Reader, childStderr io.Reader) 
 		return ErrInvalidOperationGivenPartLoopState
 	}
 
+	part.loopState.setRunning()
+
 	logger.SubscribeToProfileChange(part)
 	part.forwardProfile()
 	part.continuouslyRead(childStdout, childStderr)
-	part.loopState.setRunning()
 	return nil
 }
 

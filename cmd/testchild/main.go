@@ -4,10 +4,10 @@ import (
 	"fmt"
 	goLog "log"
 	"os"
-	"time"
 
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/marshal"
+	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/ElrondNetwork/elrond-go-logger/pipes"
 )
 
@@ -51,7 +51,8 @@ func main() {
 		barLog.Info("bar-in-go")
 	}()
 
-	time.Sleep(1 * time.Second)
+	mock.SendDummySignal("done-step-1")
+	mock.WaitUntilLogLevelPattern("*:TRACE")
 
 	fooLog.Trace("foo-trace-yes")
 	barLog.Trace("bar-trace-yes")
@@ -59,7 +60,7 @@ func main() {
 	fmt.Println("Here's some stdout")
 	fmt.Fprintln(os.Stderr, "Here's some stderr")
 
-	time.Sleep(1 * time.Second)
+	mock.SendDummySignal("done-step-2")
 }
 
 func getPipeFile(fileDescriptor uintptr) *os.File {

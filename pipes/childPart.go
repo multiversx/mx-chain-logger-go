@@ -41,13 +41,14 @@ func (part *childPart) StartLoop() error {
 		return ErrInvalidOperationGivenPartLoopState
 	}
 
+	part.loopState.setRunning()
+
 	err := part.addAsObserver()
 	if err != nil {
 		return err
 	}
 
 	go part.continuouslyReadProfile()
-	part.loopState.setRunning()
 	return nil
 }
 

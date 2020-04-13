@@ -5,10 +5,10 @@ import (
 	"os"
 	"os/exec"
 	"testing"
-	"time"
 
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/marshal"
+	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,8 +37,10 @@ func TestParentPart_CannotStartLoopIfStopped(t *testing.T) {
 }
 
 func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
+	mock.ClearAllDummySignals()
+
 	// Record logs by means of a logs gatherer, so we can apply assertions afterwards
-	gatherer := &dummyLogsGatherer{}
+	gatherer := &mock.DummyLogsGatherer{}
 	logOutputSubject := logger.GetLogOutputSubject()
 	logOutputSubject.AddObserver(gatherer, gatherer)
 
@@ -59,8 +61,7 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 
 	part.StartLoop(childStdout, arwenStderr)
 
-	// TODO: Wait after a certain message
-	time.Sleep(1 * time.Second)
+	mock.WaitForDummySignal("done-step-1")
 	require.True(t, gatherer.ContainsLogLine("foo", logger.LogInfo, "foo-info"))
 	require.True(t, gatherer.ContainsLogLine("bar", logger.LogInfo, "bar-info"))
 	require.False(t, gatherer.ContainsText("foo-trace-no"))
@@ -73,8 +74,7 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 	logger.SetLogLevel("*:TRACE")
 	logger.NotifyProfileChange()
 
-	// TODO: Wait after a certain message
-	time.Sleep(2 * time.Second)
+	mock.WaitForDummySignal("done-step-2")
 	require.True(t, gatherer.ContainsLogLine("foo", logger.LogTrace, "foo-trace-yes"))
 	require.True(t, gatherer.ContainsLogLine("bar", logger.LogTrace, "bar-trace-yes"))
 	require.True(t, gatherer.ContainsLogLine(textOutputSinkName, logger.LogTrace, "child-name"))
