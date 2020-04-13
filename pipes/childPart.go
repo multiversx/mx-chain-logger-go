@@ -47,6 +47,7 @@ func (part *childPart) StartLoop() error {
 	}
 
 	go part.continuouslyReadProfile()
+	part.loopState.setRunning()
 	return nil
 }
 

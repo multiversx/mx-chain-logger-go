@@ -22,7 +22,3 @@ func TestPartLoopState(t *testing.T) {
 	require.False(t, state.isRunning())
 	require.True(t, state.isStopped())
 }
-
-func TestPartLoopState_Concurrency(t *testing.T) {
-
-}

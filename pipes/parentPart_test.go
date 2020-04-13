@@ -1,6 +1,7 @@
 package pipes
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
 	"testing"
@@ -10,6 +11,30 @@ import (
 	"github.com/ElrondNetwork/elrond-go-logger/marshal"
 	"github.com/stretchr/testify/require"
 )
+
+func TestParentPart_CannotStartLoopTwice(t *testing.T) {
+	part, err := NewParentPart("child-name", &marshal.JSONMarshalizer{})
+	require.Nil(t, err)
+
+	err = part.StartLoop(bytes.NewBufferString(""), bytes.NewBufferString(""))
+	require.Nil(t, err)
+
+	err = part.StartLoop(bytes.NewBufferString(""), bytes.NewBufferString(""))
+	require.Equal(t, ErrInvalidOperationGivenPartLoopState, err)
+}
+
+func TestParentPart_CannotStartLoopIfStopped(t *testing.T) {
+	part, err := NewParentPart("child-name", &marshal.JSONMarshalizer{})
+	require.Nil(t, err)
+
+	err = part.StartLoop(bytes.NewBufferString(""), bytes.NewBufferString(""))
+	require.Nil(t, err)
+
+	part.StopLoop()
+
+	err = part.StartLoop(bytes.NewBufferString(""), bytes.NewBufferString(""))
+	require.Equal(t, ErrInvalidOperationGivenPartLoopState, err)
+}
 
 func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 	// Record logs by means of a logs gatherer, so we can apply assertions afterwards

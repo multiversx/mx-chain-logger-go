@@ -10,6 +10,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestChildPart_CannotStartLoopTwice(t *testing.T) {
+	childPart, err := NewChildPart(os.Stdin, os.Stdout, &marshal.JSONMarshalizer{})
+	require.Nil(t, err)
+
+	err = childPart.StartLoop()
+	require.Nil(t, err)
+
+	err = childPart.StartLoop()
+	require.Equal(t, ErrInvalidOperationGivenPartLoopState, err)
+}
+
+func TestChildPart_CannotStartLoopIfStopped(t *testing.T) {
+	childPart, err := NewChildPart(os.Stdin, os.Stdout, &marshal.JSONMarshalizer{})
+	require.Nil(t, err)
+
+	err = childPart.StartLoop()
+	require.Nil(t, err)
+
+	childPart.StopLoop()
+
+	err = childPart.StartLoop()
+	require.Equal(t, ErrInvalidOperationGivenPartLoopState, err)
+}
+
 func TestChildPart_NoPanicWhenNoParent(t *testing.T) {
 	// Bad pipes (no parent)
 	profileReader := os.NewFile(4242, "/proc/self/fd/4242")
