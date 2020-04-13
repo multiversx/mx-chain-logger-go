@@ -27,8 +27,12 @@ func main() {
 		goLog.Fatal("Cannot get pipe file: [logsWriter]")
 	}
 
-	part := pipes.NewChildPart(profileReader, logsWriter, &marshal.JSONMarshalizer{})
-	err := part.StartLoop()
+	part, err := pipes.NewChildPart(profileReader, logsWriter, &marshal.JSONMarshalizer{})
+	if err != nil {
+		goLog.Fatal("Can't create part")
+	}
+
+	err = part.StartLoop()
 	if err != nil {
 		goLog.Fatal("Ended loop")
 	}

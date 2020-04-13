@@ -7,6 +7,7 @@ import (
 
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/marshal"
+	"github.com/stretchr/testify/require"
 )
 
 func TestChildPart_NoPanicWhenNoParent(t *testing.T) {
@@ -16,8 +17,10 @@ func TestChildPart_NoPanicWhenNoParent(t *testing.T) {
 
 	logLineMarshalizer := &marshal.JSONMarshalizer{}
 	childLogger := logger.GetOrCreate("child-log")
-	childPart := NewChildPart(profileReader, logsWriter, logLineMarshalizer)
-	childPart.StartLoop()
+	childPart, err := NewChildPart(profileReader, logsWriter, logLineMarshalizer)
+	require.Nil(t, err)
+	err = childPart.StartLoop()
+	require.Nil(t, err)
 
 	childLogger.Debug("foo")
 	childLogger.Trace("bar")
@@ -29,8 +32,10 @@ func TestChildPart_ConcurrentWriteLogs(t *testing.T) {
 
 	logLineMarshalizer := &marshal.JSONMarshalizer{}
 	childLogger := logger.GetOrCreate("child-log")
-	childPart := NewChildPart(profileReader, logsWriter, logLineMarshalizer)
-	childPart.StartLoop()
+	childPart, err := NewChildPart(profileReader, logsWriter, logLineMarshalizer)
+	require.Nil(t, err)
+	err = childPart.StartLoop()
+	require.Nil(t, err)
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
