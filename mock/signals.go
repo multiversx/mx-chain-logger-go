@@ -15,7 +15,7 @@ const dummySignalsFolder = "dummysignals"
 func SendDummySignal(signal string) {
 	os.MkdirAll(dummySignalsFolder, os.ModePerm)
 
-	err := ioutil.WriteFile(path.Join(dummySignalsFolder, signal), []byte("foobar"), 0755)
+	err := ioutil.WriteFile(getSignalFile(signal), []byte("foobar"), 0755)
 	if err != nil {
 		panic("Could not send dummy signal")
 	}
@@ -24,7 +24,7 @@ func SendDummySignal(signal string) {
 // WaitForDummySignal waits for a signal (a dummy file) to appear
 func WaitForDummySignal(signal string) {
 	for {
-		if _, err := os.Stat(path.Join(dummySignalsFolder, signal)); err == nil {
+		if _, err := os.Stat(getSignalFile(signal)); err == nil {
 			break
 		}
 
@@ -48,6 +48,10 @@ func WaitUntilLogLevelPattern(value string) {
 
 		waitABit()
 	}
+}
+
+func getSignalFile(signal string) string {
+	return path.Join(dummySignalsFolder, signal)
 }
 
 func waitABit() {
