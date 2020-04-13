@@ -54,6 +54,7 @@ func (subject *profileChangeSubject) unsubscribe(observer ProfileChangeObserver)
 	}
 }
 
+// Notifies all observers that the profile changed
 func (subject *profileChangeSubject) NotifyAll() {
 	subject.mutex.RLock()
 	defer subject.mutex.RUnlock()

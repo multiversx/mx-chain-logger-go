@@ -53,13 +53,13 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 
 	childStdout, err := command.StdoutPipe()
 	require.Nil(t, err)
-	arwenStderr, err := command.StderrPipe()
+	childStderr, err := command.StderrPipe()
 	require.Nil(t, err)
 
 	err = command.Start()
 	require.Nil(t, err)
 
-	part.StartLoop(childStdout, arwenStderr)
+	part.StartLoop(childStdout, childStderr)
 
 	mock.WaitForDummySignal("done-step-1")
 	require.True(t, gatherer.ContainsLogLine("foo", logger.LogInfo, "foo-info"))
