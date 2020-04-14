@@ -20,7 +20,7 @@ var displayByteSlice func(slice []byte) string
 func init() {
 	logPattern = "*:INFO"
 	loggers = make(map[string]*logger)
-	defaultLogOut = &logOutputSubject{}
+	defaultLogOut = NewLogOutputSubject()
 	_ = defaultLogOut.AddObserver(os.Stdout, &ConsoleFormatter{})
 
 	displayByteSlice = ToHex
@@ -33,7 +33,7 @@ func GetOrCreate(name string) *logger {
 
 	loggerFromMap, ok := loggers[name]
 	if !ok {
-		loggerFromMap = newLogger(name, defaultLogLevel, defaultLogOut)
+		loggerFromMap = NewLogger(name, defaultLogLevel, defaultLogOut)
 		loggers[name] = loggerFromMap
 	}
 
@@ -101,6 +101,11 @@ func IsEnabledLoggerName() bool {
 	logMut.RUnlock()
 
 	return withLogName
+}
+
+// GetLogOutputSubject returns the default log output subject
+func GetLogOutputSubject() LogOutputHandler {
+	return defaultLogOut
 }
 
 // AddLogObserver adds a new observer (writer + formatter) to the already built-in log observers queue

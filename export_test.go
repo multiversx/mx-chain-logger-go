@@ -11,10 +11,6 @@ func (los *logOutputSubject) Observers() ([]io.Writer, []Formatter) {
 	return los.writers, los.formatters
 }
 
-func NewLogger(name string, logLevel LogLevel, logOutput LogOutputHandler) *logger {
-	return newLogger(name, logLevel, logOutput)
-}
-
 func (l *logger) LogLevel() LogLevel {
 	return l.logLevel
 }

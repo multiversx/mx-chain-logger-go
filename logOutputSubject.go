@@ -8,6 +8,8 @@ import (
 	"github.com/ElrondNetwork/elrond-go-logger/check"
 )
 
+var _ LogOutputHandler = (*logOutputSubject)(nil)
+
 // logOutputSubject follows the observer-subject pattern by which it holds n Writer and n Formatters.
 // Each time a call to the Output method is done, it iterates through the containing formatters and writers
 // in order to output the data

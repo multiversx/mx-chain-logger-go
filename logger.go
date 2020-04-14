@@ -4,6 +4,8 @@ import (
 	"sync"
 )
 
+var _ Logger = (*logger)(nil)
+
 // logger is the primary structure used to interact with the productive code
 type logger struct {
 	name      string
@@ -12,8 +14,8 @@ type logger struct {
 	logOutput LogOutputHandler
 }
 
-// newLogger create a new logger instance
-func newLogger(name string, logLevel LogLevel, logOutput LogOutputHandler) *logger {
+// NewLogger create a new logger instance
+func NewLogger(name string, logLevel LogLevel, logOutput LogOutputHandler) *logger {
 	log := &logger{
 		name:      name,
 		logLevel:  logLevel,

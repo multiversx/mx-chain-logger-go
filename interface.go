@@ -14,6 +14,7 @@ type Logger interface {
 	Warn(message string, args ...interface{})
 	Error(message string, args ...interface{})
 	LogIfError(err error, args ...interface{})
+	Log(line *LogLine)
 	SetLevel(logLevel LogLevel)
 	GetLevel() LogLevel
 	IsInterfaceNil() bool
@@ -51,4 +52,9 @@ type Marshalizer interface {
 	Marshal(obj interface{}) ([]byte, error)
 	Unmarshal(obj interface{}, buff []byte) error
 	IsInterfaceNil() bool
+}
+
+// ProfileChangeObserver defines the interface for observing profile changes
+type ProfileChangeObserver interface {
+	OnProfileChanged()
 }
