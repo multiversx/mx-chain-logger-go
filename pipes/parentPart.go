@@ -95,56 +95,61 @@ func (part *parentPart) forwardProfile() {
 }
 
 func (part *parentPart) continuouslyRead(childStdout io.Reader, childStderr io.Reader) {
-	stdoutReader := bufio.NewReader(childStdout)
-	stderrReader := bufio.NewReader(childStderr)
+	go part.continuouslyReadLogLines()
+	go part.continuouslyReadStdout(childStdout)
+	go part.continuouslyReadStderr(childStderr)
+}
 
-	go func() {
-		for {
-			if !part.loopState.isRunning() {
-				break
-			}
-
-			logLine, err := part.messenger.ReadLogLine()
-			if err != nil {
-				part.logLinesSink.Error("continuouslyReadLogLines error", "err", err)
-				break
-			}
-
-			part.logLinesSink.Log(logLine)
+func (part *parentPart) continuouslyReadLogLines() {
+	for {
+		if !part.loopState.isRunning() {
+			break
 		}
-	}()
 
-	go func() {
-		for {
-			if !part.loopState.isRunning() {
-				break
-			}
-
-			textLine, err := stdoutReader.ReadString('\n')
-			if err != nil {
-				break
-			}
-
-			textLine = strings.TrimSpace(textLine)
-			part.textOutputSink.Trace(part.childName, "line", textLine)
+		logLine, err := part.messenger.ReadLogLine()
+		if err != nil {
+			part.logLinesSink.Error("parentPart.continuouslyReadLogLines()", "err", err)
+			break
 		}
-	}()
 
-	go func() {
-		for {
-			if !part.loopState.isRunning() {
-				break
-			}
+		part.logLinesSink.Log(logLine)
+	}
+}
 
-			textLine, err := stderrReader.ReadString('\n')
-			if err != nil {
-				break
-			}
+func (part *parentPart) continuouslyReadStdout(stdout io.Reader) {
+	stdoutReader := bufio.NewReader(stdout)
 
-			textLine = strings.TrimSpace(textLine)
-			part.textOutputSink.Error(part.childName, "line", textLine)
+	for {
+		if !part.loopState.isRunning() {
+			break
 		}
-	}()
+
+		textLine, err := stdoutReader.ReadString('\n')
+		if err != nil {
+			break
+		}
+
+		textLine = strings.TrimSpace(textLine)
+		part.textOutputSink.Trace(part.childName, "line", textLine)
+	}
+}
+
+func (part *parentPart) continuouslyReadStderr(stderr io.Reader) {
+	stderrReader := bufio.NewReader(stderr)
+
+	for {
+		if !part.loopState.isRunning() {
+			break
+		}
+
+		textLine, err := stderrReader.ReadString('\n')
+		if err != nil {
+			break
+		}
+
+		textLine = strings.TrimSpace(textLine)
+		part.textOutputSink.Error(part.childName, "line", textLine)
+	}
 }
 
 // StopLoop closes all the pipes and stops listening for log profile changes
