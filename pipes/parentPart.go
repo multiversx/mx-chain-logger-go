@@ -65,10 +65,12 @@ func (part *parentPart) initializeMessenger() {
 	part.messenger = NewParentMessenger(part.logsReader, part.profileWriter, part.logLineMarshalizer)
 }
 
+// GetChildPipes gets the two pipes that should be fed to a child process
 func (part *parentPart) GetChildPipes() (*os.File, *os.File) {
 	return part.profileReader, part.logsWriter
 }
 
+// StartLoop starts the logs reading loop and starts listening for log profile changes (in order to forward them)
 func (part *parentPart) StartLoop(childStdout io.Reader, childStderr io.Reader) error {
 	if !part.loopState.isInit() {
 		return ErrInvalidOperationGivenPartLoopState
@@ -82,6 +84,7 @@ func (part *parentPart) StartLoop(childStdout io.Reader, childStderr io.Reader) 
 	return nil
 }
 
+// OnProfileChanged is called when a log profile changes
 func (part *parentPart) OnProfileChanged() {
 	part.forwardProfile()
 }
@@ -144,6 +147,7 @@ func (part *parentPart) continuouslyRead(childStdout io.Reader, childStderr io.R
 	}()
 }
 
+// StopLoop closes all the pipes and stops listening for log profile changes
 func (part *parentPart) StopLoop() {
 	part.loopState.setStopped()
 	logger.UnsubscribeFromProfileChange(part)

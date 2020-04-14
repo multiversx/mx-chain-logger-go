@@ -36,6 +36,7 @@ func NewChildPart(
 	}, nil
 }
 
+// StartLoop registers the part as a logs observer and starts the profile reading loop
 func (part *childPart) StartLoop() error {
 	if !part.loopState.isInit() {
 		return ErrInvalidOperationGivenPartLoopState
@@ -43,7 +44,7 @@ func (part *childPart) StartLoop() error {
 
 	part.loopState.setRunning()
 
-	err := part.addAsObserver()
+	err := part.registerAsSoleObserver()
 	if err != nil {
 		return err
 	}
@@ -52,7 +53,7 @@ func (part *childPart) StartLoop() error {
 	return nil
 }
 
-func (part *childPart) addAsObserver() error {
+func (part *childPart) registerAsSoleObserver() error {
 	part.outputSubject.ClearObservers()
 	part.outputSubject.AddObserver(part, part.logLineFormatter)
 	return nil
@@ -74,10 +75,12 @@ func (part *childPart) continuouslyReadProfile() {
 	}
 }
 
+// Write sends a marshalized log line through the pipe
 func (part *childPart) Write(logLineMarshalized []byte) (int, error) {
 	return part.messenger.SendLogLine(logLineMarshalized)
 }
 
+// StopLoop stops the profile reading loop and unregisters the part from observing logs
 func (part *childPart) StopLoop() {
 	part.loopState.setStopped()
 	part.outputSubject.RemoveObserver(part)
