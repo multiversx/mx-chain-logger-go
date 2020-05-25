@@ -2,7 +2,6 @@ package logger
 
 import (
 	"io"
-	"os"
 	"strings"
 	"sync"
 )
@@ -21,7 +20,7 @@ func init() {
 	logPattern = "*:INFO"
 	loggers = make(map[string]*logger)
 	defaultLogOut = NewLogOutputSubject()
-	_ = defaultLogOut.AddObserver(os.Stdout, &ConsoleFormatter{})
+	//_ = defaultLogOut.AddObserver(os.Stdout, &ConsoleFormatter{})
 
 	displayByteSlice = ToHex
 }
