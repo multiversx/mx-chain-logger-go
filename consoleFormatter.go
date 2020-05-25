@@ -88,6 +88,6 @@ func (cf *ConsoleFormatter) IsInterfaceNil() bool {
 	return cf == nil
 }
 
-func (cf *ConsoleFormatter) String() {
+func (cf *ConsoleFormatter) String() string {
 	return "Console formatter"
 }
