@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"io"
+	"reflect"
 	"sync"
 
 	"github.com/ElrondNetwork/elrond-go-logger/check"
@@ -40,6 +41,7 @@ func (los *logOutputSubject) Output(line *LogLine) {
 		format := los.formatters[i]
 		fmt.Println("Got item")
 		fmt.Printf("formatter %p \n", format)
+		fmt.Println(reflect.TypeOf(format))
 		buff := format.Output(nil)
 		fmt.Println("logOutputSubject.Output()", i, "write now")
 		_, _ = los.writers[i].Write(buff)
