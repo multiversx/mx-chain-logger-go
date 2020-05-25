@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"io"
 	"strings"
 	"sync"
@@ -30,7 +29,7 @@ type dummyStdout struct {
 }
 
 func (dummy *dummyStdout) Write(p []byte) (n int, err error) {
-	fmt.Println("Write", string(p))
+	//fmt.Println("Write", string(p))
 	return 42, nil
 }
 
