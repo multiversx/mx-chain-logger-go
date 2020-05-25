@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -34,12 +35,13 @@ func (l *logger) shouldOutput(compareLogLevel LogLevel) bool {
 }
 
 func (l *logger) outputMessageFromLogLevel(level LogLevel, message string, args ...interface{}) {
-	if l.shouldOutput(level) {
-		return
-	}
+	fmt.Println("outputMessageFromLogLevel")
+	// if l.shouldOutput(level) {
+	// 	return
+	// }
 
-	logLine := newLogLine(l.name, GetCorrelation(), message, level, args...)
-	l.logOutput.Output(logLine)
+	// logLine := newLogLine(l.name, GetCorrelation(), message, level, args...)
+	// l.logOutput.Output(logLine)
 }
 
 // Trace outputs a tracing log message with optional provided arguments
