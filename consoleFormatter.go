@@ -18,6 +18,7 @@ type ConsoleFormatter struct {
 
 // Output converts the provided LogLineHandler into a slice of bytes ready for output
 func (cf *ConsoleFormatter) Output(line LogLineHandler) []byte {
+	fmt.Println("ConsoleFormatter.Output()")
 	if line == nil {
 		return nil
 	}

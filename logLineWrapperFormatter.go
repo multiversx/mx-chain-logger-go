@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"fmt"
+
 	"github.com/ElrondNetwork/elrond-go-logger/check"
 )
 
@@ -22,6 +24,7 @@ func NewLogLineWrapperFormatter(marshalizer Marshalizer) (*logLineWrapperFormatt
 
 // Output converts the provided LogLineHandler into a slice of bytes ready for output
 func (llwf *logLineWrapperFormatter) Output(line LogLineHandler) []byte {
+	fmt.Println("logLineWrapperFormatter.Output()")
 	if check.IfNil(line) {
 		return nil
 	}

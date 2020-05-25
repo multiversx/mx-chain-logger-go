@@ -9,6 +9,7 @@ type PlainFormatter struct {
 
 // Output converts the provided LogLineHandler into a slice of bytes ready for output
 func (pf *PlainFormatter) Output(line LogLineHandler) []byte {
+	fmt.Println("PlainFormatter.Output()")
 	if line == nil {
 		return nil
 	}

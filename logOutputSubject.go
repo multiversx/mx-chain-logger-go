@@ -29,6 +29,7 @@ func NewLogOutputSubject() *logOutputSubject {
 
 // Output triggers calls to all containing formatters and writers in order to output provided log line
 func (los *logOutputSubject) Output(line *LogLine) {
+	fmt.Println("logOutputSubject.Output()")
 	los.mutObservers.RLock()
 
 	convertedLine := los.convertLogLine(line)

@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 
@@ -21,6 +22,7 @@ func (gatherer *DummyLogsGatherer) Write(p []byte) (n int, err error) {
 
 // Output -
 func (gatherer *DummyLogsGatherer) Output(line logger.LogLineHandler) []byte {
+	fmt.Println("DummyLogsGatherer.Output()")
 	gatherer.mutex.Lock()
 	defer gatherer.mutex.Unlock()
 
