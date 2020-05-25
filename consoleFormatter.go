@@ -87,3 +87,7 @@ func getLevelColor(level LogLevel) string {
 func (cf *ConsoleFormatter) IsInterfaceNil() bool {
 	return cf == nil
 }
+
+func (cf *ConsoleFormatter) String() {
+	return "Console formatter"
+}
