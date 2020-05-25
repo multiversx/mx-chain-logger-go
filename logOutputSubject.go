@@ -34,9 +34,12 @@ func (los *logOutputSubject) Output(line *LogLine) {
 
 	convertedLine := los.convertLogLine(line)
 	for i := 0; i < len(los.writers); i++ {
+		fmt.Println("logOutputSubject.Output()", i)
 		format := los.formatters[i]
 		buff := format.Output(convertedLine)
+		fmt.Println("logOutputSubject.Output()", i, "write now")
 		_, _ = los.writers[i].Write(buff)
+		fmt.Println("logOutputSubject.Output()", i, "end write")
 	}
 
 	los.mutObservers.RUnlock()
