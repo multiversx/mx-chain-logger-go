@@ -24,8 +24,8 @@ func (cf *ConsoleFormatter) Output(line LogLineHandler) []byte {
 	}
 
 	level := LogLevel(line.GetLogLevel())
-	levelColor := getLevelColor(level)
-	timestamp := displayTime(line.GetTimestamp())
+	levelColor := "" // getLevelColor(level)
+	timestamp := ""  //displayTime(line.GetTimestamp())
 	loggerName := ""
 	correlation := ""
 	message := formatMessage(line.GetMessage())
