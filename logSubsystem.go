@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"io"
 	"strings"
 	"sync"
@@ -20,9 +21,17 @@ func init() {
 	logPattern = "*:INFO"
 	loggers = make(map[string]*logger)
 	defaultLogOut = NewLogOutputSubject()
-	//_ = defaultLogOut.AddObserver(os.Stdout, &ConsoleFormatter{})
+	_ = defaultLogOut.AddObserver(&dummyStdout{}, &ConsoleFormatter{})
 
 	displayByteSlice = ToHex
+}
+
+type dummyStdout struct {
+}
+
+func (dummy *dummyStdout) Write(p []byte) (n int, err error) {
+	fmt.Println("Write", string(p))
+	return 42, nil
 }
 
 // GetOrCreate returns a log based on the name provided, generating a new log if there is no log with provided name
