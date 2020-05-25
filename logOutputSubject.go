@@ -89,6 +89,9 @@ func (los *logOutputSubject) AddObserver(w io.Writer, format Formatter) error {
 		return ErrNilFormatter
 	}
 
+	fmt.Printf("AddObserver: formatter %p \n", format)
+	fmt.Println("AddObserver", reflect.TypeOf(format))
+
 	los.mutObservers.Lock()
 	los.writers = append(los.writers, w)
 	los.formatters = append(los.formatters, format)
