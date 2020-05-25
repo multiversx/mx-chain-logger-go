@@ -39,7 +39,7 @@ func (los *logOutputSubject) Output(line *LogLine) {
 		fmt.Println("THIS FAILS?")
 		format := los.formatters[i]
 		fmt.Println("Got item")
-		fmt.Println("formatter", format)
+		fmt.Printf("formatter %p \n", format)
 		buff := format.Output(nil)
 		fmt.Println("logOutputSubject.Output()", i, "write now")
 		_, _ = los.writers[i].Write(buff)
