@@ -32,17 +32,17 @@ func (los *logOutputSubject) Output(line *LogLine) {
 	fmt.Println("logOutputSubject.Output()")
 	los.mutObservers.RLock()
 
-	convertedLine := los.convertLogLine(line)
+	_ = los.convertLogLine(line)
 	for i := 0; i < len(los.writers); i++ {
 		fmt.Println("logOutputSubject.Output()", i)
 		fmt.Println("len", len(los.formatters))
 		fmt.Println("THIS FAILS?")
-		format := los.formatters[i]
+		//format := los.formatters[i]
 		fmt.Println("Got item")
-		fmt.Println("formatter", format)
-		buff := format.Output(convertedLine)
+		//fmt.Println("formatter", format)
+		//buff := format.Output(convertedLine)
 		fmt.Println("logOutputSubject.Output()", i, "write now")
-		_, _ = los.writers[i].Write(buff)
+		_, _ = los.writers[i].Write([]byte("dummy output"))
 		fmt.Println("logOutputSubject.Output()", i, "end write")
 	}
 
