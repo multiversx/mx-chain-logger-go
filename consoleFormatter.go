@@ -29,14 +29,14 @@ func (cf *ConsoleFormatter) Output(line LogLineHandler) []byte {
 	loggerName := ""
 	correlation := ""
 	message := formatMessage(line.GetMessage())
-	args := formatArgs(levelColor, line.GetArgs()...)
+	args := "" //formatArgs(levelColor, line.GetArgs()...)
 
 	if IsEnabledLoggerName() {
-		loggerName = formatLoggerName(line.GetLoggerName())
+		loggerName = "" // formatLoggerName(line.GetLoggerName())
 	}
 
 	if IsEnabledCorrelation() {
-		correlation = formatCorrelationElements(line.GetCorrelation())
+		correlation = "" //formatCorrelationElements(line.GetCorrelation())
 	}
 
 	return []byte(
