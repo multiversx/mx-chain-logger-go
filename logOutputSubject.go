@@ -37,12 +37,12 @@ func (los *logOutputSubject) Output(line *LogLine) {
 		fmt.Println("logOutputSubject.Output()", i)
 		fmt.Println("len", len(los.formatters))
 		fmt.Println("THIS FAILS?")
-		//format := los.formatters[i]
+		format := los.formatters[i]
 		fmt.Println("Got item")
 		//fmt.Println("formatter", format)
-		//buff := format.Output(convertedLine)
+		buff := format.Output(nil)
 		fmt.Println("logOutputSubject.Output()", i, "write now")
-		_, _ = los.writers[i].Write([]byte("dummy output"))
+		_, _ = los.writers[i].Write(buff)
 		fmt.Println("logOutputSubject.Output()", i, "end write")
 	}
 
