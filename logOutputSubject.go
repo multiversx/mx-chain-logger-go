@@ -35,7 +35,7 @@ func (los *logOutputSubject) Output(line *LogLine) {
 	convertedLine := los.convertLogLine(line)
 	for i := 0; i < len(los.writers); i++ {
 		fmt.Println("logOutputSubject.Output()", i)
-		fmt.Println("len", len(los.formatters))
+		fmt.Println("len", len(los.formatters), los.formatters)
 		format := los.formatters[i]
 		fmt.Println("formatter", format)
 		buff := format.Output(convertedLine)
