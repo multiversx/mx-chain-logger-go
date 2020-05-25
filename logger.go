@@ -40,8 +40,8 @@ func (l *logger) outputMessageFromLogLevel(level LogLevel, message string, args 
 		return
 	}
 
-	// logLine := newLogLine(l.name, GetCorrelation(), message, level, args...)
-	// l.logOutput.Output(logLine)
+	logLine := newLogLine(l.name, GetCorrelation(), message, level, args...)
+	l.logOutput.Output(logLine)
 }
 
 // Trace outputs a tracing log message with optional provided arguments
