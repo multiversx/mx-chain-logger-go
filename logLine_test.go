@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ElrondNetwork/elrond-go-logger"
-	"github.com/ElrondNetwork/elrond-go-logger/marshal"
+	"github.com/ElrondNetwork/elrond-go-core/marshal"
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/proto"
 	"github.com/stretchr/testify/assert"
 )

@@ -5,32 +5,32 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/ElrondNetwork/elrond-go-core/marshal"
 	logger "github.com/ElrondNetwork/elrond-go-logger"
-	"github.com/ElrondNetwork/elrond-go-logger/marshal"
 	"github.com/stretchr/testify/require"
 )
 
 func TestChildPart_CannotStartLoopTwice(t *testing.T) {
-	childPart, err := NewChildPart(os.Stdin, os.Stdout, &marshal.JSONMarshalizer{})
+	part, err := NewChildPart(os.Stdin, os.Stdout, &marshal.JsonMarshalizer{})
 	require.Nil(t, err)
 
-	err = childPart.StartLoop()
+	err = part.StartLoop()
 	require.Nil(t, err)
 
-	err = childPart.StartLoop()
+	err = part.StartLoop()
 	require.Equal(t, ErrInvalidOperationGivenPartLoopState, err)
 }
 
 func TestChildPart_CannotStartLoopIfStopped(t *testing.T) {
-	childPart, err := NewChildPart(os.Stdin, os.Stdout, &marshal.JSONMarshalizer{})
+	part, err := NewChildPart(os.Stdin, os.Stdout, &marshal.JsonMarshalizer{})
 	require.Nil(t, err)
 
-	err = childPart.StartLoop()
+	err = part.StartLoop()
 	require.Nil(t, err)
 
-	childPart.StopLoop()
+	part.StopLoop()
 
-	err = childPart.StartLoop()
+	err = part.StartLoop()
 	require.Equal(t, ErrInvalidOperationGivenPartLoopState, err)
 }
 
@@ -39,11 +39,11 @@ func TestChildPart_NoPanicWhenNoParent(t *testing.T) {
 	profileReader := os.NewFile(4242, "/proc/self/fd/4242")
 	logsWriter := os.NewFile(4343, "/proc/self/fd/4343")
 
-	logLineMarshalizer := &marshal.JSONMarshalizer{}
+	logLineMarshalizer := &marshal.JsonMarshalizer{}
 	childLogger := logger.GetOrCreate("child-log")
-	childPart, err := NewChildPart(profileReader, logsWriter, logLineMarshalizer)
+	part, err := NewChildPart(profileReader, logsWriter, logLineMarshalizer)
 	require.Nil(t, err)
-	err = childPart.StartLoop()
+	err = part.StartLoop()
 	require.Nil(t, err)
 
 	childLogger.Debug("foo")
@@ -54,10 +54,10 @@ func TestChildPart_ConcurrentWriteLogs(t *testing.T) {
 	profileReader := os.NewFile(4242, "/proc/self/fd/4242")
 	logsWriter := os.NewFile(4343, "/proc/self/fd/4343")
 
-	childPart, err := NewChildPart(profileReader, logsWriter, &marshal.JSONMarshalizer{})
+	part, err := NewChildPart(profileReader, logsWriter, &marshal.JsonMarshalizer{})
 	require.Nil(t, err)
 
-	err = childPart.StartLoop()
+	err = part.StartLoop()
 	require.Nil(t, err)
 
 	wg := sync.WaitGroup{}

@@ -15,7 +15,7 @@ type DummyLogsGatherer struct {
 }
 
 // Write -
-func (gatherer *DummyLogsGatherer) Write(p []byte) (n int, err error) {
+func (gatherer *DummyLogsGatherer) Write(_ []byte) (n int, err error) {
 	return 0, nil
 }
 

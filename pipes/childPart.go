@@ -55,8 +55,7 @@ func (part *childPart) StartLoop() error {
 
 func (part *childPart) registerAsSoleObserver() error {
 	part.outputSubject.ClearObservers()
-	part.outputSubject.AddObserver(part, part.logLineFormatter)
-	return nil
+	return part.outputSubject.AddObserver(part, part.logLineFormatter)
 }
 
 func (part *childPart) continuouslyReadProfile() {
@@ -83,5 +82,5 @@ func (part *childPart) Write(logLineMarshalized []byte) (int, error) {
 // StopLoop stops the profile reading loop and unregisters the part from observing logs
 func (part *childPart) StopLoop() {
 	part.loopState.setStopped()
-	part.outputSubject.RemoveObserver(part)
+	_ = part.outputSubject.RemoveObserver(part)
 }
