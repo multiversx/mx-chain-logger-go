@@ -6,14 +6,14 @@ import (
 	"os/exec"
 	"testing"
 
+	"github.com/ElrondNetwork/elrond-go-core/marshal"
 	logger "github.com/ElrondNetwork/elrond-go-logger"
-	"github.com/ElrondNetwork/elrond-go-logger/marshal"
 	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/stretchr/testify/require"
 )
 
 func TestParentPart_CannotStartLoopTwice(t *testing.T) {
-	part, err := NewParentPart("child-name", &marshal.JSONMarshalizer{})
+	part, err := NewParentPart("child-name", &marshal.JsonMarshalizer{})
 	require.Nil(t, err)
 
 	err = part.StartLoop(bytes.NewBufferString(""), bytes.NewBufferString(""))
@@ -24,7 +24,7 @@ func TestParentPart_CannotStartLoopTwice(t *testing.T) {
 }
 
 func TestParentPart_CannotStartLoopIfStopped(t *testing.T) {
-	part, err := NewParentPart("child-name", &marshal.JSONMarshalizer{})
+	part, err := NewParentPart("child-name", &marshal.JsonMarshalizer{})
 	require.Nil(t, err)
 
 	err = part.StartLoop(bytes.NewBufferString(""), bytes.NewBufferString(""))
@@ -42,9 +42,9 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 	// Record logs by means of a logs gatherer, so we can apply assertions afterwards
 	gatherer := &mock.DummyLogsGatherer{}
 	logOutputSubject := logger.GetLogOutputSubject()
-	logOutputSubject.AddObserver(gatherer, gatherer)
+	_ = logOutputSubject.AddObserver(gatherer, gatherer)
 
-	part, err := NewParentPart("child-name", &marshal.JSONMarshalizer{})
+	part, err := NewParentPart("child-name", &marshal.JsonMarshalizer{})
 	require.Nil(t, err)
 	profileReader, logsWriter := part.GetChildPipes()
 
@@ -59,7 +59,7 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 	err = command.Start()
 	require.Nil(t, err)
 
-	part.StartLoop(childStdout, childStderr)
+	_ = part.StartLoop(childStdout, childStderr)
 
 	mock.WaitForDummySignal("done-step-1")
 	require.True(t, gatherer.ContainsLogLine("foo", logger.LogInfo, "foo-info"))
@@ -71,7 +71,7 @@ func TestParentPart_ReceivesLogsFromChildProcess(t *testing.T) {
 
 	// Change logs profile
 	logger.ToggleLoggerName(true)
-	logger.SetLogLevel("*:TRACE")
+	_ = logger.SetLogLevel("*:TRACE")
 	logger.NotifyProfileChange()
 
 	mock.WaitForDummySignal("done-step-2")

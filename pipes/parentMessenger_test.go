@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ElrondNetwork/elrond-go-logger/marshal"
+	"github.com/ElrondNetwork/elrond-go-core/marshal"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,15 +14,15 @@ func TestParentMessenger_ReadLogLine(t *testing.T) {
 	profileReader, profileWriter, err := os.Pipe()
 	require.Nil(t, err)
 
-	parentMessenger := NewParentMessenger(logsReader, profileWriter, &marshal.JSONMarshalizer{})
+	parentMessenger := NewParentMessenger(logsReader, profileWriter, &marshal.JsonMarshalizer{})
 	childMessenger := NewChildMessenger(profileReader, logsWriter)
 
-	childMessenger.SendLogLine([]byte("{}"))
+	_, _ = childMessenger.SendLogLine([]byte("{}"))
 	logLine, err := parentMessenger.ReadLogLine()
 	require.Nil(t, err)
 	require.NotNil(t, logLine)
 
-	childMessenger.SendLogLine([]byte(`{"LoggerName": "foo", "Message": "bar"}`))
+	_, _ = childMessenger.SendLogLine([]byte(`{"LoggerName": "foo", "Message": "bar"}`))
 	logLine, err = parentMessenger.ReadLogLine()
 	require.Nil(t, err)
 	require.NotNil(t, logLine)
@@ -36,10 +36,10 @@ func TestParentMessenger_ReadLogLine_BadJsonShouldErrWithActualJson(t *testing.T
 	profileReader, profileWriter, err := os.Pipe()
 	require.Nil(t, err)
 
-	parentMessenger := NewParentMessenger(logsReader, profileWriter, &marshal.JSONMarshalizer{})
+	parentMessenger := NewParentMessenger(logsReader, profileWriter, &marshal.JsonMarshalizer{})
 	childMessenger := NewChildMessenger(profileReader, logsWriter)
 
-	childMessenger.SendLogLine([]byte("bad json"))
+	_, _ = childMessenger.SendLogLine([]byte("bad json"))
 	logLine, err := parentMessenger.ReadLogLine()
 	require.NotNil(t, err)
 	require.Contains(t, err.Error(), "bad json")

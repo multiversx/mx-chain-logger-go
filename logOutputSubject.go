@@ -5,7 +5,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/ElrondNetwork/elrond-go-logger/check"
+	"github.com/ElrondNetwork/elrond-go-core/core/check"
 )
 
 var _ LogOutputHandler = (*logOutputSubject)(nil)

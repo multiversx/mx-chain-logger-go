@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/ElrondNetwork/elrond-go-logger/check"
+	"github.com/ElrondNetwork/elrond-go-core/core/check"
 )
 
 // logLineWrapperFormatter converts the LogLineHandler into its marshalized form

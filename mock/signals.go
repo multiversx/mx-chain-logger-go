@@ -13,7 +13,7 @@ const dummySignalsFolder = "dummysignals"
 
 // SendDummySignal sends a dummy signal (creates a file)
 func SendDummySignal(signal string) {
-	os.MkdirAll(dummySignalsFolder, os.ModePerm)
+	_ = os.MkdirAll(dummySignalsFolder, os.ModePerm)
 
 	err := ioutil.WriteFile(getSignalFile(signal), []byte("foobar"), 0755)
 	if err != nil {
@@ -34,7 +34,7 @@ func WaitForDummySignal(signal string) {
 
 // ClearAllDummySignals clears all dummy signals
 func ClearAllDummySignals() {
-	os.RemoveAll(dummySignalsFolder)
+	_ = os.RemoveAll(dummySignalsFolder)
 	waitABit()
 }
 
