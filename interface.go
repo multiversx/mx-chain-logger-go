@@ -58,3 +58,39 @@ type Marshalizer interface {
 type ProfileChangeObserver interface {
 	OnProfileChanged()
 }
+
+// EpochStartNotifier defines the interface for epoch start notification
+type EpochStartNotifier interface {
+	RegisterForEpochChangeConfirmed(handler func(epoch uint32))
+	IsInterfaceNil() bool
+}
+
+// LogLifeSpanner defines a notification channel for the file logging lifespan
+type LogLifeSpanner interface {
+	GetChannel() <-chan string
+	IsInterfaceNil() bool
+}
+
+// SizeLogLifeSpanner defines a notification channel for the file logging lifespan
+type SizeLogLifeSpanner interface {
+	LogLifeSpanner
+	SetCurrentFile(string)
+}
+
+// LogLifeSpanFactory defines the methods for creating a log lifeSpanner
+type LogLifeSpanFactory interface {
+	CreateLogLifeSpanner(args LogLifeSpanFactoryArgs) (LogLifeSpanner, error)
+}
+
+// FileSizeCheckHandler defines the method needed for getting a file size
+type FileSizeCheckHandler interface {
+	GetSize(path string) (int64, error)
+	IsInterfaceNil() bool
+}
+
+// LogLifeSpanFactoryArgs contains the data needed for the creation of a logLifeSpanFactory
+type LogLifeSpanFactoryArgs struct {
+	EpochStartNotifierWithConfirm EpochStartNotifier
+	LifeSpanType                  string
+	RecreateEvery                 int
+}

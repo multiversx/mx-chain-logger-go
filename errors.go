@@ -19,3 +19,9 @@ var ErrNilMarshalizer = errors.New("nil marshalizer")
 
 // ErrNilDisplayByteSliceHandler signals that a nil display byte slice handler has been provided
 var ErrNilDisplayByteSliceHandler = errors.New("nil display byte slice handler")
+
+// ErrUnsupportedLogLifeSpanType is raised when an unsupported log life span type is provided
+var ErrUnsupportedLogLifeSpanType = errors.New("unsupported log life span type")
+
+// ErrCreateLogLifeSpanner is raised when a log life spanner cannot be created by the factory
+var ErrCreateLogLifeSpanner = errors.New("create log lifespan failed")
