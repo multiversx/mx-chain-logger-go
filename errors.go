@@ -25,3 +25,12 @@ var ErrUnsupportedLogLifeSpanType = errors.New("unsupported log life span type")
 
 // ErrCreateLogLifeSpanner is raised when a log life spanner cannot be created by the factory
 var ErrCreateLogLifeSpanner = errors.New("create log lifespan failed")
+
+// ErrCreateEpochsLifeSpanner is raised when an epoch log life spanner cannot be created
+var ErrCreateEpochsLifeSpanner = errors.New("create epoch log lifespan failed")
+
+// ErrCreateSizeLifeSpanner is raised when an size log life spanner cannot be created
+var ErrCreateSizeLifeSpanner = errors.New("create size log lifespan failed")
+
+// ErrCreateSecondsLifeSpanner is raised when an seconds log life spanner cannot be created
+var ErrCreateSecondsLifeSpanner = errors.New("create seconds log lifespan failed")

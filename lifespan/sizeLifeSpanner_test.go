@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ElrondNetwork/elrond-go-core/core"
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +17,7 @@ func TestSizeLifeSpanner_NewWithSmallerTimeSpanShouldErr(t *testing.T) {
 	fsc := &mock.FileSizeCheckStub{}
 	sls, err := newSizeLifeSpanner(fsc, 0, time.Second)
 	assert.Nil(t, sls)
-	assert.True(t, errors.Is(err, core.ErrInvalidLogFileMinLifeSpan))
+	assert.True(t, errors.Is(err, logger.ErrCreateSizeLifeSpanner))
 }
 
 func TestSizeLifeSpanner_NewWithNilFileSizeCheckerShouldErr(t *testing.T) {
@@ -25,7 +25,7 @@ func TestSizeLifeSpanner_NewWithNilFileSizeCheckerShouldErr(t *testing.T) {
 
 	sls, err := newSizeLifeSpanner(nil, 2, time.Second)
 	assert.Nil(t, sls)
-	assert.True(t, errors.Is(err, core.ErrInvalidLogFileMinLifeSpan))
+	assert.True(t, errors.Is(err, logger.ErrCreateSizeLifeSpanner))
 }
 
 func TestSizeLifeSpanner_NewShouldWork(t *testing.T) {

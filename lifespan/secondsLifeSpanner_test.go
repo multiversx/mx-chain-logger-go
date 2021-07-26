@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ElrondNetwork/elrond-go-core/core"
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +15,7 @@ func TestSecondsLifeSpanner_NewWithSmallerTimeSpanShouldErr(t *testing.T) {
 
 	sls, err := newSecondsLifeSpanner(time.Millisecond)
 	assert.Nil(t, sls)
-	assert.True(t, errors.Is(err, core.ErrInvalidLogFileMinLifeSpan))
+	assert.True(t, errors.Is(err, logger.ErrCreateSecondsLifeSpanner))
 }
 
 func TestSecondsLifeSpanner_NewShouldWork(t *testing.T) {

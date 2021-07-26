@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ElrondNetwork/elrond-go-core/core"
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +17,7 @@ func TestEpochsLifeSpanner_NewWithSmallerTimeSpanShouldErr(t *testing.T) {
 	notifier := &mock.EpochStartNotifierStub{}
 	els, err := newEpochsLifeSpanner(notifier, 0)
 	assert.Nil(t, els)
-	assert.True(t, errors.Is(err, core.ErrInvalidLogFileMinLifeSpan))
+	assert.True(t, errors.Is(err, logger.ErrCreateEpochsLifeSpanner))
 }
 
 func TestEpochsLifeSpanner_NewWithNilEpochStartNotifierShouldErr(t *testing.T) {
@@ -25,7 +25,7 @@ func TestEpochsLifeSpanner_NewWithNilEpochStartNotifierShouldErr(t *testing.T) {
 
 	els, err := newEpochsLifeSpanner(nil, 3)
 	assert.Nil(t, els)
-	assert.True(t, errors.Is(err, core.ErrInvalidLogFileMinLifeSpan))
+	assert.True(t, errors.Is(err, logger.ErrCreateEpochsLifeSpanner))
 }
 
 func TestEpochsLifeSpanner_NewShouldWork(t *testing.T) {

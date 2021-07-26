@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ElrondNetwork/elrond-go-core/core"
 	"github.com/ElrondNetwork/elrond-go-core/core/check"
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
@@ -19,10 +18,10 @@ type epochsLifeSpanner struct {
 
 func newEpochsLifeSpanner(es logger.EpochStartNotifier, epochsLifeSpan uint32) (*epochsLifeSpanner, error) {
 	if check.IfNil(es) {
-		return nil, fmt.Errorf("%w, epoch start notifier is nil", core.ErrInvalidLogFileMinLifeSpan)
+		return nil, fmt.Errorf("%w, epoch start notifier is nil", logger.ErrCreateEpochsLifeSpanner)
 	}
 	if epochsLifeSpan < minEpochsLifeSpan {
-		return nil, fmt.Errorf("%w, min: %v, provided %v", core.ErrInvalidLogFileMinLifeSpan, minEpochsLifeSpan, epochsLifeSpan)
+		return nil, fmt.Errorf("%w, min: %v, provided %v", logger.ErrCreateEpochsLifeSpanner, minEpochsLifeSpan, epochsLifeSpan)
 	}
 
 	els := &epochsLifeSpanner{

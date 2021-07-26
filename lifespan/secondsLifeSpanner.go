@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ElrondNetwork/elrond-go-core/core"
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
 
 const minFileLifeSpan = time.Second
@@ -18,7 +18,7 @@ type secondsLifeSpanner struct {
 
 func newSecondsLifeSpanner(timeSpanInSeconds time.Duration) (*secondsLifeSpanner, error) {
 	if timeSpanInSeconds < minFileLifeSpan {
-		return nil, fmt.Errorf("%w, provided %v", core.ErrInvalidLogFileMinLifeSpan, timeSpanInSeconds)
+		return nil, fmt.Errorf("%w, provided %v, min %v", logger.ErrCreateSecondsLifeSpanner, timeSpanInSeconds, minFileLifeSpan)
 	}
 
 	sls := &secondsLifeSpanner{

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ElrondNetwork/elrond-go-core/core"
 	"github.com/ElrondNetwork/elrond-go-core/core/check"
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
@@ -24,15 +23,15 @@ type sizeLifeSpanner struct {
 
 func newSizeLifeSpanner(fileSizeChecker logger.FileSizeCheckHandler, sizeLifeSpanInMB uint32, refreshInterval time.Duration) (*sizeLifeSpanner, error) {
 	if check.IfNil(fileSizeChecker) {
-		return nil, fmt.Errorf("newSizeLifeSpanner %w, nil file size checker", core.ErrInvalidLogFileMinLifeSpan)
+		return nil, fmt.Errorf("newSizeLifeSpanner %w, nil file size checker", logger.ErrCreateSizeLifeSpanner)
 	}
 
 	if sizeLifeSpanInMB < minMBLifeSpan {
-		return nil, fmt.Errorf("newSizeLifeSpanner %w, provided size %v, min %v MB", core.ErrInvalidLogFileMinLifeSpan, sizeLifeSpanInMB, minMBLifeSpan)
+		return nil, fmt.Errorf("newSizeLifeSpanner %w, provided size %v, min %v MB", logger.ErrCreateSizeLifeSpanner, sizeLifeSpanInMB, minMBLifeSpan)
 	}
 
 	if refreshInterval < minRefreshInterval {
-		return nil, fmt.Errorf("newSizeLifeSpanner %w, provided refreshInterval %v, min %v", core.ErrInvalidLogFileMinLifeSpan, refreshInterval, minRefreshInterval)
+		return nil, fmt.Errorf("newSizeLifeSpanner %w, provided refreshInterval %v, min %v", logger.ErrCreateSizeLifeSpanner, refreshInterval, minRefreshInterval)
 	}
 
 	sls := &sizeLifeSpanner{
