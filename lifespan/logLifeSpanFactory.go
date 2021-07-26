@@ -22,7 +22,7 @@ func NewTypeLogLifeSpanFactory() *typeLogLifeSpanFactory {
 }
 
 // CreateLogLifeSpanner is a factory method for creating log life spanners
-func (llsf *typeLogLifeSpanFactory) CreateLogLifeSpanner(args logger.LogLifeSpanFactoryArgs) (logger.LogLifeSpanner, error) {
+func (factory *typeLogLifeSpanFactory) CreateLogLifeSpanner(args logger.LogLifeSpanFactoryArgs) (logger.LogLifeSpanner, error) {
 	switch args.LifeSpanType {
 	case epochType:
 		{
