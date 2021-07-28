@@ -36,7 +36,7 @@ func TestEpochsLifeSpanner_NewShouldWork(t *testing.T) {
 	els, err := newEpochsLifeSpanner(notifier, epochsLifeSpan)
 	assert.Nil(t, err)
 	assert.NotNil(t, els)
-	assert.NotNil(t, els.GetChannel())
+	assert.NotNil(t, els.GetNotification())
 	assert.Equal(t, epochsLifeSpan, els.spanInEpochs)
 }
 
@@ -51,7 +51,7 @@ func TestEpochsLifeSpanner_ChannelShouldCall(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-sls.GetChannel()
+		_, open = <-sls.GetNotification()
 		recreateCalled++
 		wg.Done()
 	}()
@@ -85,7 +85,7 @@ func TestEpochsLifeSpanner_CloseShouldWork(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-els.GetChannel()
+		_, open = <-els.GetNotification()
 		wg.Done()
 	}()
 

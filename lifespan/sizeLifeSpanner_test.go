@@ -37,7 +37,7 @@ func TestSizeLifeSpanner_NewShouldWork(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, els)
 	assert.NotNil(t, els.fileSizeChecker)
-	assert.NotNil(t, els.GetChannel())
+	assert.NotNil(t, els.GetNotification())
 	sizeInMB := 1024 * 1024 * sizeLifeSpanInMB
 	assert.Equal(t, sizeInMB, els.spanInMB)
 }
@@ -55,7 +55,7 @@ func TestSizeLifeSpanner_ChannelShouldCall(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-sls.GetChannel()
+		_, open = <-sls.GetNotification()
 		recreateCalled++
 		wg.Done()
 	}()
@@ -87,7 +87,7 @@ func TestSizeLifeSpanner_CloseShouldWork(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-sls.GetChannel()
+		_, open = <-sls.GetNotification()
 		wg.Done()
 	}()
 

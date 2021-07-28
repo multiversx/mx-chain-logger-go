@@ -10,8 +10,8 @@ func newBaseLifeSpanner() *baseLifeSpanner {
 	}
 }
 
-// GetChannel gets the channel associated with a log recreate event
-func (bls *baseLifeSpanner) GetChannel() <-chan string {
+// GetNotification gets the channel associated with a log recreate event
+func (bls *baseLifeSpanner) GetNotification() <-chan string {
 	return bls.lifeSpanChannel
 }
 

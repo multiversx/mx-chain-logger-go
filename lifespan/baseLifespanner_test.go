@@ -15,7 +15,7 @@ func TestBaseLifeSpanner_GetChannelShouldWork(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-bls.GetChannel()
+		_, open = <-bls.GetNotification()
 		wg.Done()
 	}()
 
@@ -34,7 +34,7 @@ func TestBaseLifeSpanner_CloseShouldCloseChannel(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-bls.GetChannel()
+		_, open = <-bls.GetNotification()
 		wg.Done()
 	}()
 
