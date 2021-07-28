@@ -69,11 +69,6 @@ type EpochStartNotifier interface {
 type LogLifeSpanner interface {
 	GetNotification() <-chan string
 	IsInterfaceNil() bool
-}
-
-// SizeLogLifeSpanner defines a notification channel for the file logging lifespan
-type SizeLogLifeSpanner interface {
-	LogLifeSpanner
 	SetCurrentFile(string)
 }
 
