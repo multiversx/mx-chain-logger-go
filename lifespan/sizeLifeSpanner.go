@@ -66,7 +66,7 @@ func (sls *sizeLifeSpanner) startTicker(ctx context.Context, path string, maxSiz
 		case <-time.After(sls.refreshInterVal):
 			size, _ := sls.fileSizeChecker.GetSize(path)
 			if size > maxSize {
-				sls.lifeSpanChannel <- ""
+				sls.Notify("")
 			}
 		case <-ctx.Done():
 			return

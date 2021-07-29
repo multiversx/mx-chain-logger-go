@@ -87,7 +87,7 @@ func TestSizeLifeSpanner_CloseShouldWork(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-sls.GetNotification()
+		_, open = <-sls.closeChannel
 		wg.Done()
 	}()
 

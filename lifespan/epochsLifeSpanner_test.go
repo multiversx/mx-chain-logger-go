@@ -85,7 +85,7 @@ func TestEpochsLifeSpanner_CloseShouldWork(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-els.GetNotification()
+		_, open = <-els.closeChannel
 		wg.Done()
 	}()
 

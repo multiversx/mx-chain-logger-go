@@ -32,7 +32,7 @@ func newEpochsLifeSpanner(es logger.EpochStartNotifier, epochsLifeSpan uint32) (
 	es.RegisterForEpochChangeConfirmed(
 		func(epoch uint32) {
 			if epoch%els.spanInEpochs == 0 {
-				els.lifeSpanChannel <- fmt.Sprintf("%v", epoch)
+				els.Notify(fmt.Sprintf("%v", epoch))
 			}
 		},
 	)

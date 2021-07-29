@@ -83,9 +83,8 @@ type FileSizeCheckHandler interface {
 	IsInterfaceNil() bool
 }
 
-// LogLifeSpanFactoryArgs contains the data needed for the creation of a logLifeSpanFactory
-type LogLifeSpanFactoryArgs struct {
-	EpochStartNotifierWithConfirm EpochStartNotifier
-	LifeSpanType                  string
-	RecreateEvery                 int
+type LifeSpannerWrapper interface {
+	SetLifeSpanner(spanner LogLifeSpanner)
+	SetCurrentFile(newFile string)
+	GetNotificationChannel() <-chan string
 }

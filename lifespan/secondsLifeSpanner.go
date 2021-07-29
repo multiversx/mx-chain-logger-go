@@ -51,7 +51,7 @@ func (sls *secondsLifeSpanner) startTicker(ctx context.Context) {
 	for {
 		select {
 		case <-time.After(sls.timeSpanInSeconds):
-			sls.lifeSpanChannel <- ""
+			sls.Notify("")
 		case <-ctx.Done():
 			sls.baseLifeSpanner.Close()
 			return

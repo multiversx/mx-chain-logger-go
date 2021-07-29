@@ -38,7 +38,7 @@ func TestSecondsLifeSpanner_ChannelShouldCall(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-sls.lifeSpanChannel
+		_, open = <-sls.GetNotification()
 		recreateCalled = true
 		wg.Done()
 	}()
@@ -57,7 +57,7 @@ func TestSecondsLifeSpanner_CloseShouldWork(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		_, open = <-sls.lifeSpanChannel
+		_, open = <-sls.closeChannel
 		wg.Done()
 	}()
 
