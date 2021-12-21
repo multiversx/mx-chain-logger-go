@@ -115,7 +115,7 @@ func (part *parentPart) continuouslyReadLogLines() {
 			break
 		}
 
-		part.logLinesSink.Log(logLine)
+		part.logLinesSink.LogLine(logLine)
 	}
 }
 

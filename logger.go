@@ -67,6 +67,11 @@ func (l *logger) Error(message string, args ...interface{}) {
 	l.outputMessageFromLogLevel(LogError, message, args...)
 }
 
+// Log outputs a defined log level message with optional provided arguments
+func (l *logger) Log(logLevel LogLevel, message string, args ...interface{}) {
+	l.outputMessageFromLogLevel(logLevel, message, args...)
+}
+
 // LogIfError outputs an error log message with optional provided arguments if the provided error parameter is not nil
 func (l *logger) LogIfError(err error, args ...interface{}) {
 	if err == nil {
@@ -76,8 +81,8 @@ func (l *logger) LogIfError(err error, args ...interface{}) {
 	l.Error(err.Error(), args...)
 }
 
-// Log forwards the log line towards underlying log output handler
-func (l *logger) Log(line *LogLine) {
+// LogLine forwards the log line towards underlying log output handler
+func (l *logger) LogLine(line *LogLine) {
 	if line == nil {
 		return
 	}
