@@ -75,7 +75,7 @@ func ToHexShort(slice []byte) string {
 	return prefix + ellipsisString + suffix
 }
 
-// ToHex converts the provided byte slice to its hex represantation
+// ToHex converts the provided byte slice to its hex representation
 func ToHex(slice []byte) string {
 	return hex.EncodeToString(slice)
 }
