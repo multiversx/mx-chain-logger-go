@@ -87,7 +87,7 @@ func (los *logOutputSubject) AddObserver(w io.Writer, format Formatter) error {
 	return nil
 }
 
-// RemoveObserver will remove the observer based on the writer provided. The comparision is done on pointers.
+// RemoveObserver will remove the observer based on the writer provided. The comparison is done on pointers.
 // If the provided writer is not contained, the function will return an error.
 func (los *logOutputSubject) RemoveObserver(w io.Writer) error {
 	if w == nil {

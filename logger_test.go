@@ -1,11 +1,10 @@
 package logger_test
 
 import (
-	"github.com/ElrondNetwork/elrond-go-core/core/check"
 	"sync/atomic"
-
 	"testing"
 
+	"github.com/ElrondNetwork/elrond-go-core/core/check"
 	logger "github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/stretchr/testify/assert"

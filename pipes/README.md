@@ -36,7 +36,7 @@ part, _ := pipes.NewChildPart(profileReader, logsWriter, marshalizer)
 _ = part.StartLoop()
 ```
 
-The child process has to aquire the provided pipes, create its part of the logging dialogue and then call `StartLoop`.
+The child process has to acquire the provided pipes, create its part of the logging dialogue and then call `StartLoop`.
 The child part is automatically registered as observer to the global default `LogOutputSubject`, which means that it gets notified on each log write from any of the loggers in the process. When notified, the child part simply forwards the message (the serialized log line) to its parent, through pipe `logsWriter`. 
 
 Furthermore, the child part listens for eventual log profile changes on the pipe `profileReader`. Any profile change is applied immediately.
