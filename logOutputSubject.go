@@ -9,7 +9,7 @@ import (
 	"github.com/ElrondNetwork/elrond-go-core/core/check"
 )
 
-const ASCIISpace = 32
+const ASCIISpace = byte(' ')
 const ASCIITab = byte('\t')
 const ASCIILineFeed = byte('\r')
 const ASCIINewLine = byte('\n')
@@ -69,7 +69,7 @@ func (los *logOutputSubject) convertLogLine(logLine *LogLine) LogLineHandler {
 		case []byte:
 			line.Args[i] = displayHandler(obj)
 		case string:
-			line.Args[i] = checkStringConvertIfNecessary(displayHandler, obj)
+			line.Args[i] = convertStringIfNotASCII(displayHandler, obj)
 		default:
 			line.Args[i] = fmt.Sprintf("%v", obj)
 		}
@@ -78,7 +78,7 @@ func (los *logOutputSubject) convertLogLine(logLine *LogLine) LogLineHandler {
 	return line
 }
 
-func checkStringConvertIfNecessary(byteHandler func([]byte) string, data string) string {
+func convertStringIfNotASCII(byteHandler func([]byte) string, data string) string {
 	if isASCII(data) {
 		return data
 	}
