@@ -9,6 +9,11 @@ import (
 	"github.com/ElrondNetwork/elrond-go-core/core/check"
 )
 
+const ASCIISpace = 32
+const ASCIITab = byte('\t')
+const ASCIILineFeed = byte('\r')
+const ASCIINewLine = byte('\n')
+
 var _ LogOutputHandler = (*logOutputSubject)(nil)
 
 // logOutputSubject follows the observer-subject pattern by which it holds n Writer and n Formatters.
@@ -87,11 +92,11 @@ func isASCII(data string) bool {
 			return false
 		}
 
-		if data[i] >= 32 {
+		if data[i] >= ASCIISpace {
 			continue
 		}
 
-		if data[i] == '\t' || data[i] == '\r' || data[i] == '\n' {
+		if data[i] == ASCIITab || data[i] == ASCIILineFeed || data[i] == ASCIINewLine {
 			continue
 		}
 
