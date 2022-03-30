@@ -1,6 +1,7 @@
 package logger_test
 
 import (
+	"bytes"
 	"errors"
 	"sync"
 	"sync/atomic"
@@ -11,6 +12,7 @@ import (
 	"github.com/ElrondNetwork/elrond-go-logger/mock"
 	"github.com/ElrondNetwork/elrond-go-logger/proto"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const testString1 = "DEBUG[2022-03-28 13:22:34.061] [consensus/spos/bls] [2/0/2/(END_ROUND)] step 3: block header final info has been received PubKeysBitmap = 1f AggregateSignature = 25f831bdb0801891a46b3b08a7bb11e306ad2e21d801a17312402a9d8bfc3ba76a4b97b42a8bc5ef533c471c47274c18 LeaderSignature = b2036b8db0bcaa7336e38f940b5f88706dc30afb6324693d01a93e9c47776ded31a195ac081b0c4274ed5c1354815292\n"
@@ -108,7 +110,7 @@ func TestLogOutputSubject_OutputShouldProduceCorrectString(t *testing.T) {
 				return 0, nil
 			},
 		},
-		&logger.PlainFormatter{},
+		&mock.FormatterMock{},
 	)
 
 	logLine := &logger.LogLine{
@@ -277,19 +279,63 @@ func TestLogOutputSubject_ClearObservers(t *testing.T) {
 func TestIsASCII(t *testing.T) {
 	t.Parallel()
 
-	assert.True(t, logger.IsASCII("ascii TEXT 1234 \\~&&\b\t\n"))
+	assert.True(t, logger.IsASCII("ascii TEXT 1234 \\~&&\t\n"))
 	assert.False(t, logger.IsASCII("µs"))
+	assert.True(t, logger.IsASCII(testString1))
+	assert.False(t, logger.IsASCII(testString2))
+}
+
+func TestLogOutputSubject_variousTypesOfStrings(t *testing.T) {
+	t.Parallel()
+
+	// basic string
+	testArgFormat(t, "test", "test")
+
+	// a hash
+	hash := bytes.Repeat([]byte{1}, 32)
+	expectedRes := "0101010101010101010101010101010101010101010101010101010101010101"
+	testArgFormat(t, hash, expectedRes)
+
+	// emojis
+	emojiString := "🏓🏓🏓"
+	expectedRes = "f09f8f93f09f8f93f09f8f93"
+	testArgFormat(t, emojiString, expectedRes)
+
+	// a data field
+	dataField := "ESDTTransfer@6y7u8i@1000"
+	testArgFormat(t, dataField, dataField)
+
+	// bytes should be returned as hex representation
+	uglyBytes := []byte{0, 5, 17, 19, 127}
+	expectedRes = "000511137f"
+	testArgFormat(t, uglyBytes, expectedRes)
+
+	// unreadable characters
+	uglyString := string(uglyBytes)
+	expectedRes = "000511137f"
+	testArgFormat(t, uglyString, expectedRes)
+}
+
+func testArgFormat(t *testing.T, input interface{}, expectedOutput interface{}) {
+	los := logger.NewLogOutputSubject()
+
+	logLine := logger.LogLine{
+		Args: []interface{}{"test key", input},
+	}
+
+	result := los.ConvertLogLine(&logLine)
+	require.Equal(t, expectedOutput, result.GetArgs()[1])
 }
 
 func BenchmarkIsASCII(b *testing.B) {
 	b.Run("ASCII string", func(b *testing.B) {
-		// should be < 150ns/op for the provided string
+		// should be < 170ns/op for the provided string
 		for i := 0; i < b.N; i++ {
 			_ = logger.IsASCII(testString1)
 		}
 	})
 	b.Run("non ASCII string", func(b *testing.B) {
-		// should be < 50ns/op for the provided string
+		// should be < 60ns/op for the provided string
 		for i := 0; i < b.N; i++ {
 			_ = logger.IsASCII(testString2)
 		}

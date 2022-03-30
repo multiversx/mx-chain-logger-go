@@ -86,6 +86,16 @@ func isASCII(data string) bool {
 		if data[i] >= utf8.RuneSelf {
 			return false
 		}
+
+		if data[i] >= 32 {
+			continue
+		}
+
+		if data[i] == '\t' || data[i] == '\r' || data[i] == '\n' {
+			continue
+		}
+
+		return false
 	}
 
 	return true

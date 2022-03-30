@@ -21,3 +21,8 @@ func (l *logger) LogLevel() LogLevel {
 func IsASCII(data string) bool {
 	return isASCII(data)
 }
+
+// ConvertLogLine -
+func (los *logOutputSubject) ConvertLogLine(logLine *LogLine) LogLineHandler {
+	return los.convertLogLine(logLine)
+}
