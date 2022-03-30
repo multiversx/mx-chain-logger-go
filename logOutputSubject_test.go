@@ -1,6 +1,7 @@
 package logger_test
 
 import (
+	"errors"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -8,8 +9,12 @@ import (
 
 	"github.com/ElrondNetwork/elrond-go-logger"
 	"github.com/ElrondNetwork/elrond-go-logger/mock"
+	"github.com/ElrondNetwork/elrond-go-logger/proto"
 	"github.com/stretchr/testify/assert"
 )
+
+const testString1 = "DEBUG[2022-03-28 13:22:34.061] [consensus/spos/bls] [2/0/2/(END_ROUND)] step 3: block header final info has been received PubKeysBitmap = 1f AggregateSignature = 25f831bdb0801891a46b3b08a7bb11e306ad2e21d801a17312402a9d8bfc3ba76a4b97b42a8bc5ef533c471c47274c18 LeaderSignature = b2036b8db0bcaa7336e38f940b5f88706dc30afb6324693d01a93e9c47776ded31a195ac081b0c4274ed5c1354815292\n"
+const testString2 = "DEBUG[2022-03-28 13:22:34.027] [..cess/coordinator] [2/0/2/(BLOCK)] elapsed time to processMiniBlocksToMe    time [s] = 90.747Âµs \n"
 
 func TestNewLogOutputSubject(t *testing.T) {
 	t.Parallel()
@@ -19,7 +24,7 @@ func TestNewLogOutputSubject(t *testing.T) {
 	assert.False(t, los.IsInterfaceNil())
 }
 
-//------- AddObserver
+// ------- AddObserver
 
 func TestLogOutputSubject_AddObserverNilWriterShouldError(t *testing.T) {
 	t.Parallel()
@@ -54,7 +59,7 @@ func TestLogOutputSubject_AddObserverShouldWork(t *testing.T) {
 	assert.Equal(t, 1, len(formatters))
 }
 
-//------- Output
+// ------- Output
 
 func TestLogOutputSubject_OutputNoObserversShouldDoNothing(t *testing.T) {
 	t.Parallel()
@@ -89,6 +94,47 @@ func TestLogOutputSubject_OutputShouldCallFormatterAndWriter(t *testing.T) {
 
 	assert.Equal(t, int32(1), atomic.LoadInt32(&writerCalled))
 	assert.Equal(t, int32(1), atomic.LoadInt32(&formatterCalled))
+}
+
+func TestLogOutputSubject_OutputShouldProduceCorrectString(t *testing.T) {
+	t.Parallel()
+
+	los := logger.NewLogOutputSubject()
+	var writtenData []byte
+	_ = los.AddObserver(
+		&mock.WriterStub{
+			WriteCalled: func(p []byte) (n int, err error) {
+				writtenData = p
+				return 0, nil
+			},
+		},
+		&logger.PlainFormatter{},
+	)
+
+	logLine := &logger.LogLine{
+		LoggerName:  "",
+		Correlation: proto.LogCorrelationMessage{},
+		Message:     "message",
+		LogLevel:    logger.LogDebug,
+		Args: []interface{}{
+			"int", 1,
+			"ASCII string", "plain text \n",
+			"non-ASCII string", "Âµs",
+			"time.Duration", time.Microsecond*4 + time.Nanosecond,
+			"byte slice", []byte("aaa"),
+			"error", errors.New("an error"),
+			"bool", true,
+		},
+		Timestamp: time.Date(2022, 03, 30, 15, 47, 52, 0, time.Local),
+	}
+
+	los.Output(logLine)
+
+	expectedString := `DEBUG[2022-03-30 15:47:52.000]   message                                  int = 1 ASCII string = plain text 
+ non-ASCII string = c382c2b573 time.Duration = 4.001µs byte slice = 616161 error = an error bool = true 
+`
+
+	assert.Equal(t, expectedString, string(writtenData))
 }
 
 func TestLogOutputSubject_OutputCalledConcurrentShouldWork(t *testing.T) {
@@ -129,7 +175,7 @@ func TestLogOutputSubject_OutputCalledConcurrentShouldWork(t *testing.T) {
 	assert.Equal(t, int32(numCalls), atomic.LoadInt32(&formatterCalled))
 }
 
-//------- RemoveObserver
+// ------- RemoveObserver
 
 func TestLogOutputSubject_RemoveObserverNilWriterShouldError(t *testing.T) {
 	t.Parallel()
@@ -226,4 +272,26 @@ func TestLogOutputSubject_ClearObservers(t *testing.T) {
 
 	obs, _ = los.Observers()
 	assert.Equal(t, 0, len(obs))
+}
+
+func TestIsASCII(t *testing.T) {
+	t.Parallel()
+
+	assert.True(t, logger.IsASCII("ascii TEXT 1234 \\~&&\b\t\n"))
+	assert.False(t, logger.IsASCII("µs"))
+}
+
+func BenchmarkIsASCII(b *testing.B) {
+	b.Run("ASCII string", func(b *testing.B) {
+		// should be < 150ns/op for the provided string
+		for i := 0; i < b.N; i++ {
+			_ = logger.IsASCII(testString1)
+		}
+	})
+	b.Run("non ASCII string", func(b *testing.B) {
+		// should be < 50ns/op for the provided string
+		for i := 0; i < b.N; i++ {
+			_ = logger.IsASCII(testString2)
+		}
+	})
 }

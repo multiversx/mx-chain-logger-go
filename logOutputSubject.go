@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/ElrondNetwork/elrond-go-core/core/check"
 )
@@ -62,12 +63,32 @@ func (los *logOutputSubject) convertLogLine(logLine *LogLine) LogLineHandler {
 		switch obj := obj.(type) {
 		case []byte:
 			line.Args[i] = displayHandler(obj)
+		case string:
+			line.Args[i] = checkStringConvertIfNecessary(displayHandler, obj)
 		default:
 			line.Args[i] = fmt.Sprintf("%v", obj)
 		}
 	}
 
 	return line
+}
+
+func checkStringConvertIfNecessary(byteHandler func([]byte) string, data string) string {
+	if isASCII(data) {
+		return data
+	}
+
+	return byteHandler([]byte(data))
+}
+
+func isASCII(data string) bool {
+	for i := 0; i < len(data); i++ {
+		if data[i] >= utf8.RuneSelf {
+			return false
+		}
+	}
+
+	return true
 }
 
 // AddObserver adds a writer + formatter (called here observer) to the containing observer-like lists
