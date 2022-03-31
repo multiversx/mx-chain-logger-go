@@ -4,9 +4,15 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/ElrondNetwork/elrond-go-core/core/check"
 )
+
+const ASCIISpace = byte(' ')
+const ASCIITab = byte('\t')
+const ASCIILineFeed = byte('\r')
+const ASCIINewLine = byte('\n')
 
 var _ LogOutputHandler = (*logOutputSubject)(nil)
 
@@ -62,12 +68,42 @@ func (los *logOutputSubject) convertLogLine(logLine *LogLine) LogLineHandler {
 		switch obj := obj.(type) {
 		case []byte:
 			line.Args[i] = displayHandler(obj)
+		case string:
+			line.Args[i] = convertStringIfNotASCII(displayHandler, obj)
 		default:
 			line.Args[i] = fmt.Sprintf("%v", obj)
 		}
 	}
 
 	return line
+}
+
+func convertStringIfNotASCII(byteHandler func([]byte) string, data string) string {
+	if isASCII(data) {
+		return data
+	}
+
+	return byteHandler([]byte(data))
+}
+
+func isASCII(data string) bool {
+	for i := 0; i < len(data); i++ {
+		if data[i] >= utf8.RuneSelf {
+			return false
+		}
+
+		if data[i] >= ASCIISpace {
+			continue
+		}
+
+		if data[i] == ASCIITab || data[i] == ASCIILineFeed || data[i] == ASCIINewLine {
+			continue
+		}
+
+		return false
+	}
+
+	return true
 }
 
 // AddObserver adds a writer + formatter (called here observer) to the containing observer-like lists
