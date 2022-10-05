@@ -33,6 +33,8 @@ func TestNewFileLogging(t *testing.T) {
 
 		assert.False(t, check.IfNil(fl))
 		assert.Nil(t, err)
+		defaultSize := 1024 * 1024 * 1024 // 1GB
+		assert.Equal(t, defaultSize, int(fl.lifeSpanSize))
 		_ = fl.Close()
 	})
 }

@@ -63,7 +63,7 @@ func NewFileLogging(args ArgsFileLogging) (*fileLogging, error) {
 		defaultLogsPath: args.DefaultLogsPath,
 		logFilePrefix:   args.LogFilePrefix,
 		isClosed:        false,
-		lifeSpanSize:    defaultFileSizeInMB,
+		lifeSpanSize:    defaultFileSizeInMB * oneMegaByte,
 		notifyChan:      make(chan struct{}),
 	}
 
