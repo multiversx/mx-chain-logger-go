@@ -3,7 +3,7 @@ module github.com/ElrondNetwork/elrond-go-logger
 go 1.17
 
 require (
-	github.com/ElrondNetwork/elrond-go-core v1.0.0
+	github.com/ElrondNetwork/elrond-go-core v1.1.26-0.20221122132700-01ef9fc95877
 	github.com/gogo/protobuf v1.3.2
 	github.com/stretchr/testify v1.7.0
 )
