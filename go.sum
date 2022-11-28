@@ -1,5 +1,5 @@
-github.com/ElrondNetwork/elrond-go-core v1.1.26-0.20221123085822-f43d6bc3f56c h1:TQok8KV+OZqdJoUXsK51UBNaxxAww+W4h95F7ZoHmzg=
-github.com/ElrondNetwork/elrond-go-core v1.1.26-0.20221123085822-f43d6bc3f56c/go.mod h1:N/RI++YU2M6OlnD1GSZepc1wPhI84ykRDQ1IyD3B0wk=
+github.com/ElrondNetwork/elrond-go-core v1.1.26 h1:5syiJMlkWlH7HHnuiOafJJzeI+oUfYqL8mXREqrFerY=
+github.com/ElrondNetwork/elrond-go-core v1.1.26/go.mod h1:N/RI++YU2M6OlnD1GSZepc1wPhI84ykRDQ1IyD3B0wk=
 github.com/aead/siphash v1.0.1/go.mod h1:Nywa3cDsYNNK3gaciGTWPwHt0wlpNV15vwmswBAUSII=
 github.com/btcsuite/btcd v0.20.1-beta/go.mod h1:wVuoA8VJLEcwgqHBwHmzLRazpKxTv13Px/pDuV7OomQ=
 github.com/btcsuite/btcd v0.22.0-beta.0.20220111032746-97732e52810c/go.mod h1:tjmYdS6MLJ5/s0Fj4DbLgSbDHbEqLJrtnHecBFkdz5M=
