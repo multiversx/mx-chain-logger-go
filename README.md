@@ -1,4 +1,4 @@
-# mx-chain-core-go
+# mx-chain-logger-go
 
 Multiversx' logger subsystem written in go
 
