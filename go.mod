@@ -1,10 +1,10 @@
-module github.com/ElrondNetwork/elrond-go-logger
+module github.com/multiversx/mx-chain-logger-go
 
 go 1.17
 
 require (
-	github.com/ElrondNetwork/elrond-go-core v1.1.26
 	github.com/gogo/protobuf v1.3.2
+	github.com/multiversx/mx-chain-core-go v1.1.30
 	github.com/stretchr/testify v1.7.0
 )
 

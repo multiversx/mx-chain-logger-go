@@ -3,7 +3,7 @@ package logger
 import (
 	"sync"
 
-	"github.com/ElrondNetwork/elrond-go-logger/proto"
+	"github.com/multiversx/mx-chain-logger-go/proto"
 )
 
 var globalCorrelation logCorrelation
