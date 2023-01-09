@@ -1,6 +1,6 @@
 package mock
 
-import "github.com/ElrondNetwork/elrond-go-logger"
+import "github.com/multiversx/mx-chain-logger-go"
 
 // FormatterStub -
 type FormatterStub struct {

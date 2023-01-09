@@ -3,7 +3,7 @@ package logger_test
 import (
 	"testing"
 
-	"github.com/ElrondNetwork/elrond-go-logger"
+	"github.com/multiversx/mx-chain-logger-go"
 	"github.com/stretchr/testify/assert"
 )
 
