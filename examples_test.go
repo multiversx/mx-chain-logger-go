@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/ElrondNetwork/elrond-go-logger"
+	"github.com/multiversx/mx-chain-logger-go"
 )
 
 func TestLogger_ExampleCreateLoggerAndOutputSimpleMessages(t *testing.T) {

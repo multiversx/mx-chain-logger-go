@@ -3,7 +3,7 @@ package pipes
 import (
 	"os"
 
-	logger "github.com/ElrondNetwork/elrond-go-logger"
+	logger "github.com/multiversx/mx-chain-logger-go"
 )
 
 // ChildMessenger is the messenger on child's part of the pipe

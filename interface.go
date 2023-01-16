@@ -3,7 +3,7 @@ package logger
 import (
 	"io"
 
-	"github.com/ElrondNetwork/elrond-go-logger/proto"
+	"github.com/multiversx/mx-chain-logger-go/proto"
 )
 
 // Logger defines the behavior of a data logger component
