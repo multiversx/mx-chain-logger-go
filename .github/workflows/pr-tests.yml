@@ -1,10 +1,11 @@
 name: Tests
 
 on:
-  push:
-    branches: [ master, development, feat/*, rc/* ]
   pull_request:
-    branches: [ master, development, feat/*, rc/* ]
+    branches: [ main, rc/*, feat/* ]
+    types: [ opened, ready_for_review ]
+  push:
+  workflow_dispatch:
 
 jobs:
   test:
