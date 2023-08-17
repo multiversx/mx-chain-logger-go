@@ -2,7 +2,7 @@ package file
 
 import (
 	"errors"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -54,7 +54,7 @@ func TestNewFileLogging_CloseShouldStopCreatingLogFiles(t *testing.T) {
 	time.Sleep(time.Second * 2)
 
 	dirToSearchFiles := filepath.Join(args.WorkingDir, logsDirectory)
-	files, _ := ioutil.ReadDir(dirToSearchFiles)
+	files, _ := os.ReadDir(dirToSearchFiles)
 
 	assert.Equal(t, 4, len(files))
 }
