@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/gogo/protobuf v1.3.2
-	github.com/multiversx/mx-chain-core-go v1.2.17-0.20230919104727-566f55d213ab
+	github.com/multiversx/mx-chain-core-go v1.2.17-0.20231025072115-f3530bc1cab1
 	github.com/stretchr/testify v1.7.0
 )
 
