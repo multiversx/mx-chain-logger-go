@@ -25,7 +25,7 @@ func TestLogger_ExampleCreateLoggerAndOutputSimpleMessages(t *testing.T) {
 	log.Log(logger.LogInfo, "a second information message")
 	log.Log(logger.LogWarning, "a second warning message")
 	log.Log(logger.LogError, "a second error message")
-	log.Log(logger.LogNone, "this message should not be print")
+	log.Log(logger.LogNone, "this message should not be printed")
 }
 
 func TestLogger_ExampleMessagesWithArguments(t *testing.T) {
