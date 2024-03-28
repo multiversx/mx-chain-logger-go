@@ -35,9 +35,23 @@ func GetOrCreate(name string) *logger {
 	if !ok {
 		loggerFromMap = NewLogger(name, defaultLogLevel, defaultLogOut)
 		loggers[name] = loggerFromMap
+		tryApplyLogLevelUnprotected(name, loggerFromMap)
 	}
 
 	return loggerFromMap
+}
+
+func tryApplyLogLevelUnprotected(name string, loggerInstance *logger) {
+	logLevels, patterns, err := ParseLogLevelAndMatchingString(logPattern)
+	if err != nil {
+		loggerInstance.Error("internal logger error - unable to set initial log level in tryApplyLogLevelUnprotected", "error", err)
+		return
+	}
+
+	singleMap := map[string]*logger{
+		name: loggerInstance,
+	}
+	_ = setLogLevelOnMap(singleMap, logLevels, patterns)
 }
 
 // SetLogLevel changes the log level of the contained loggers. The expected format is
@@ -57,7 +71,7 @@ func SetLogLevel(logLevelAndPattern string) error {
 	}
 
 	logMut.Lock()
-	setLogLevelOnMap(loggers, &defaultLogLevel, logLevels, patterns)
+	defaultLogLevel = setLogLevelOnMap(loggers, logLevels, patterns)
 	logPattern = logLevelAndPattern
 	logMut.Unlock()
 
@@ -124,7 +138,8 @@ func ClearLogObservers() {
 	defaultLogOut.ClearObservers()
 }
 
-func setLogLevelOnMap(loggers map[string]*logger, dest *LogLevel, logLevels []LogLevel, patterns []string) {
+func setLogLevelOnMap(loggers map[string]*logger, logLevels []LogLevel, patterns []string) (outputDefaultLogLevel LogLevel) {
+	outputDefaultLogLevel = defaultLogLevel
 	for i := 0; i < len(logLevels); i++ {
 		pattern := patterns[i]
 		logLevel := logLevels[i]
@@ -136,9 +151,11 @@ func setLogLevelOnMap(loggers map[string]*logger, dest *LogLevel, logLevels []Lo
 		}
 
 		if pattern == "*" {
-			*dest = logLevel
+			outputDefaultLogLevel = logLevel
 		}
 	}
+
+	return
 }
 
 // ParseLogLevelAndMatchingString can parse a string in the form "MATCHING_STRING1:LOG_LEVEL1,MATCHING_STRING2:LOG_LEVEL2" into its
