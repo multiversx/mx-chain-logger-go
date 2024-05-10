@@ -26,11 +26,15 @@ func NewLogger(name string, logLevel LogLevel, logOutput LogOutputHandler) *logg
 }
 
 func (l *logger) shouldSkipOutput(compareLogLevel LogLevel) bool {
+	if compareLogLevel == LogNone {
+		return true // do not output log level none
+	}
+
 	l.mutLevel.RLock()
-	shouldOutput := l.logLevel > compareLogLevel
+	shouldSkipOutput := l.logLevel > compareLogLevel
 	l.mutLevel.RUnlock()
 
-	return shouldOutput
+	return shouldSkipOutput
 }
 
 func (l *logger) outputMessageFromLogLevel(level LogLevel, message string, args ...interface{}) {
