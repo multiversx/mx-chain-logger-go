@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/gogo/protobuf v1.3.2
-	github.com/multiversx/mx-chain-core-go v1.2.21-0.20240617082746-b96246547d8e
+	github.com/multiversx/mx-chain-core-go v1.2.21-0.20240710173253-c619bbab9a08
 	github.com/stretchr/testify v1.7.0
 )
 
