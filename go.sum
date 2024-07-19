@@ -14,8 +14,8 @@ github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/mr-tron/base58 v1.2.0 h1:T/HDJBh4ZCPbU39/+c3rRvE0uKBQlU27+QI8LJ4t64o=
 github.com/mr-tron/base58 v1.2.0/go.mod h1:BinMc/sQntlIE1frQmRFPUoPA1Zkr8VRgBdjWI2mNwc=
-github.com/multiversx/mx-chain-core-go v1.2.21-0.20240710173253-c619bbab9a08 h1:ZNbqmdKhNrnq88mNsAtogZzEFgnFIVwqfloZ4lqpA0w=
-github.com/multiversx/mx-chain-core-go v1.2.21-0.20240710173253-c619bbab9a08/go.mod h1:80c219T0k3sqeF44m/VQ6NcOlqMA2oH99lR1nNHhD34=
+github.com/multiversx/mx-chain-core-go v1.2.21-0.20240719103659-046d9829efc9 h1:ZTWHoQ01tChjuT8OLKVsw5sWvrm9Sd38l0Ad/ab0NJY=
+github.com/multiversx/mx-chain-core-go v1.2.21-0.20240719103659-046d9829efc9/go.mod h1:80c219T0k3sqeF44m/VQ6NcOlqMA2oH99lR1nNHhD34=
 github.com/pelletier/go-toml v1.9.3 h1:zeC5b1GviRUyKYd6OJPvBU/mcVDVoL1OhT17FCt5dSQ=
 github.com/pelletier/go-toml v1.9.3/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
