@@ -95,9 +95,17 @@ func (fl *fileLogging) createFile() (*os.File, error) {
 		core.ArgCreateFileArgument{
 			Prefix:        fl.logFilePrefix,
 			Directory:     logDirectory,
-			FileExtension: "log",
+			FileExtension: fl.decideFileExtension(),
 		},
 	)
+}
+
+func (fl *fileLogging) decideFileExtension() string {
+	if fl.logAsJson {
+		return "jsonl"
+	}
+
+	return "log"
 }
 
 func (fl *fileLogging) recreateLogFile() {
