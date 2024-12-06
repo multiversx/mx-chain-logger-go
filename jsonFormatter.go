@@ -16,7 +16,7 @@ func (pf *JSONFormatter) Output(line LogLineHandler) []byte {
 
 	output, err := json.Marshal(line)
 	if err != nil {
-		return []byte(fmt.Sprintf("error marshalling log line: %s", err.Error()))
+		return []byte(fmt.Sprintf("error marshalling log line: %s\n", err.Error()))
 	}
 
 	output = append(output, '\n')
