@@ -128,7 +128,7 @@ func AddLogObserver(w io.Writer, formatter Formatter) error {
 	return defaultLogOut.AddObserver(w, formatter)
 }
 
-// RemoveLogObserver removes an exiting observer by providing the writer pointer.
+// RemoveLogObserver removes an existing observer by providing the writer pointer.
 func RemoveLogObserver(w io.Writer) error {
 	return defaultLogOut.RemoveObserver(w)
 }
