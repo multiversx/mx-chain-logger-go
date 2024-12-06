@@ -40,6 +40,7 @@ type fileLogging struct {
 	workingDir              string
 	defaultLogsPath         string
 	logFilePrefix           string
+	logAsJson               bool
 	cancelFunc              func()
 	mutIsClosed             sync.Mutex
 	lifeSpanSize            uint64
@@ -54,6 +55,7 @@ type ArgsFileLogging struct {
 	WorkingDir      string
 	DefaultLogsPath string
 	LogFilePrefix   string
+	LogAsJson       bool
 }
 
 // NewFileLogging creates a file log watcher used to break the log file into multiple smaller files
@@ -62,6 +64,7 @@ func NewFileLogging(args ArgsFileLogging) (*fileLogging, error) {
 		workingDir:      args.WorkingDir,
 		defaultLogsPath: args.DefaultLogsPath,
 		logFilePrefix:   args.LogFilePrefix,
+		logAsJson:       args.LogAsJson,
 		isClosed:        false,
 		lifeSpanSize:    defaultFileSizeInMB * oneMegaByte,
 		notifyChan:      make(chan struct{}),
@@ -108,7 +111,7 @@ func (fl *fileLogging) recreateLogFile() {
 	defer fl.mutOperation.Unlock()
 
 	oldFile := fl.currentFile
-	err = logger.AddLogObserver(newFile, &logger.PlainFormatter{})
+	err = logger.AddLogObserver(newFile, fl.decideFormatter())
 	if err != nil {
 		log.Error("error adding log observer", "error", err)
 		return
@@ -130,6 +133,14 @@ func (fl *fileLogging) recreateLogFile() {
 	log.LogIfError(errNotCritical, "step", "removing old log observer")
 
 	fl.timeBasedLogLifeSpanner.reset()
+}
+
+func (fl *fileLogging) decideFormatter() logger.Formatter {
+	if fl.logAsJson {
+		return &logger.JSONFormatter{}
+	}
+
+	return &logger.PlainFormatter{}
 }
 
 func (fl *fileLogging) autoRecreateFile(ctx context.Context) {

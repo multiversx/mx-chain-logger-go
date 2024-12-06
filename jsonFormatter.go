@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-type JsonFormatter struct {
+type JSONFormatter struct {
 }
 
 // Output converts the provided LogLineHandler into a slice of bytes ready for output
-func (pf *JsonFormatter) Output(line LogLineHandler) []byte {
+func (pf *JSONFormatter) Output(line LogLineHandler) []byte {
 	if line == nil {
 		return nil
 	}
@@ -19,10 +19,11 @@ func (pf *JsonFormatter) Output(line LogLineHandler) []byte {
 		return []byte(fmt.Sprintf("error marshalling log line: %s", err.Error()))
 	}
 
+	output = append(output, '\n')
 	return output
 }
 
 // IsInterfaceNil returns true if there is no value under the interface
-func (pf *JsonFormatter) IsInterfaceNil() bool {
+func (pf *JSONFormatter) IsInterfaceNil() bool {
 	return pf == nil
 }
