@@ -22,6 +22,8 @@ const (
 	minFileLifeSpan         = time.Second
 	minSizeInMB             = uint64(1)
 	maxSizeInMB             = uint64(1024 * 1024) // 1TB
+	logFileExtension        = "log"
+	logFileAsJsonExtension  = "jsonl"
 )
 
 var log = logger.GetOrCreate("common/logging")
@@ -102,10 +104,10 @@ func (fl *fileLogging) createFile() (*os.File, error) {
 
 func (fl *fileLogging) decideFileExtension() string {
 	if fl.logAsJson {
-		return "jsonl"
+		return logFileAsJsonExtension
 	}
 
-	return "log"
+	return logFileExtension
 }
 
 func (fl *fileLogging) recreateLogFile() {
