@@ -8,19 +8,15 @@ import (
 )
 
 func TestJSONFormatter_Output(t *testing.T) {
-	t.Parallel()
-
 	formatter := &JSONFormatter{}
 
 	t.Run("with nil line", func(t *testing.T) {
-		t.Parallel()
-
 		output := formatter.Output(nil)
 		require.Nil(t, output)
 	})
 
-	t.Run("with line", func(t *testing.T) {
-		t.Parallel()
+	t.Run("with line (without correlation)", func(t *testing.T) {
+		ToggleCorrelation(false)
 
 		line := &LogLineWrapper{
 			LogLineMessage: proto.LogLineMessage{
@@ -34,17 +30,41 @@ func TestJSONFormatter_Output(t *testing.T) {
 
 		output := formatter.Output(line)
 		require.NotNil(t, output)
-		require.Equal(t, `{"Message":"bar","LogLevel":2,"Args":["a","42","b","43"],"Timestamp":1122334455,"LoggerName":"foo","Correlation":{}}`+"\n", string(output))
+		require.Equal(t, `{"t":1122334455,"l":2,"n":"foo","m":"bar","a":["a","42","b","43"]}`+"\n", string(output))
+	})
+
+	t.Run("with line (with correlation)", func(t *testing.T) {
+		ToggleCorrelation(true)
+
+		line := &LogLineWrapper{
+			LogLineMessage: proto.LogLineMessage{
+				LoggerName: "foo",
+				Message:    "bar",
+				LogLevel:   int32(LogInfo),
+				Args:       []string{"a", "42", "b", "43"},
+				Timestamp:  1122334455,
+				Correlation: proto.LogCorrelationMessage{
+					Shard:    "3",
+					Epoch:    42,
+					Round:    4343,
+					SubRound: "end",
+				},
+			},
+		}
+
+		output := formatter.Output(line)
+		require.NotNil(t, output)
+		require.Equal(t, `{"t":1122334455,"l":2,"n":"foo","s":"3","e":42,"r":4343,"sr":"end","m":"bar","a":["a","42","b","43"]}`+"\n", string(output))
 	})
 
 	t.Run("with bad line", func(t *testing.T) {
-		t.Parallel()
+		ToggleCorrelation(false)
 
 		line := &badLogLine{}
 
 		output := formatter.Output(line)
 		require.NotNil(t, output)
-		require.Equal(t, "error marshalling log line: json: unsupported type: func()\n", string(output))
+		require.Equal(t, `{"t":0,"l":0}`+"\n", string(output))
 	})
 }
 
