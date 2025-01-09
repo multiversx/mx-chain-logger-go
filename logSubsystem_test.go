@@ -84,3 +84,19 @@ func TestGetLoggerLogLevel(t *testing.T) {
 	// rollback to the default value
 	_ = logger.SetLogLevel("*:INFO")
 }
+
+func TestGetLoggerLogLevelWithInitialLogSet(t *testing.T) {
+	_ = logger.GetOrCreate("1")
+
+	err := logger.SetLogLevel("1:DEBUG,2:TRACE")
+
+	_ = logger.GetOrCreate("2")
+
+	assert.Nil(t, err)
+	assert.Equal(t, logger.LogDebug, logger.GetLoggerLogLevel("1"))
+	assert.Equal(t, logger.LogTrace, logger.GetLoggerLogLevel("2"))
+	assert.Equal(t, logger.LogNone, logger.GetLoggerLogLevel("42"))
+
+	// rollback to the default value
+	_ = logger.SetLogLevel("*:INFO")
+}

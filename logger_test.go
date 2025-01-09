@@ -234,6 +234,16 @@ func TestLogger_Log(t *testing.T) {
 
 		assert.Equal(t, int32(1), atomic.LoadInt32(numCalls))
 	})
+	t.Run("should not call for LogNone", func(t *testing.T) {
+		t.Parallel()
+
+		los, numCalls := generateTestLogOutputSubject()
+		log := logger.NewLogger("test", logger.LogInfo, los)
+
+		log.Log(logger.LogNone, "test")
+
+		assert.Equal(t, int32(0), atomic.LoadInt32(numCalls))
+	})
 }
 
 //------- LogIfError
