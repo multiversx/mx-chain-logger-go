@@ -1,10 +1,10 @@
 module github.com/multiversx/mx-chain-logger-go
 
-go 1.20
+go 1.23
 
 require (
 	github.com/gogo/protobuf v1.3.2
-	github.com/multiversx/mx-chain-core-go v1.2.21
+	github.com/multiversx/mx-chain-core-go v1.3.2-0.20250520074139-18b645ad397a
 	github.com/stretchr/testify v1.7.0
 )
 
