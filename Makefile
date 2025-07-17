@@ -1,4 +1,4 @@
-.PHONY: test clean build-testchild
+.PHONY: test clean
 
 clean:
 	go clean -cache -testcache
@@ -6,8 +6,5 @@ clean:
 build:
 	go build ./...
 
-build-testchild:
-	go build -o ./pipes/testchild ./cmd/testchild
-
-test: clean build-testchild
+test: clean
 	go test -race -count=1 ./...
