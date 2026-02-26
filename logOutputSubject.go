@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/multiversx/mx-chain-core-go/core/check"
@@ -79,7 +80,7 @@ func (los *logOutputSubject) convertLogLine(logLine *LogLine) LogLineHandler {
 }
 
 func convertStringIfNotASCII(byteHandler func([]byte) string, data string) string {
-	if isASCII(data) {
+	if isASCII(data) || isValidUTF8String(data) {
 		return data
 	}
 
@@ -101,6 +102,32 @@ func isASCII(data string) bool {
 		}
 
 		return false
+	}
+
+	return true
+}
+
+func isValidUTF8String(data string) bool {
+	for i := 0; i < len(data); {
+		r, size := utf8.DecodeRuneInString(data[i:])
+		if r == utf8.RuneError && size == 1 {
+			return false
+		}
+
+		if r < utf8.RuneSelf {
+			if r < rune(ASCIISpace) && r != rune(ASCIITab) && r != rune(ASCIILineFeed) && r != rune(ASCIINewLine) {
+				return false
+			}
+
+			i += size
+			continue
+		}
+
+		if !unicode.IsPrint(r) {
+			return false
+		}
+
+		i += size
 	}
 
 	return true
