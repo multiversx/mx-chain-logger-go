@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/gogo/protobuf v1.3.2
-	github.com/multiversx/mx-chain-core-go v1.5.1-0.20260619074528-4e8586673c06
+	github.com/multiversx/mx-chain-core-go v1.5.1-0.20260713100334-14d633236974
 	github.com/stretchr/testify v1.11.1
 )
 
@@ -15,7 +15,7 @@ require (
 	github.com/mr-tron/base58 v1.3.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
