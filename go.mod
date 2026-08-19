@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/gogo/protobuf v1.3.2
-	github.com/multiversx/mx-chain-core-go v1.5.1-0.20260713100334-14d633236974
+	github.com/multiversx/mx-chain-core-go v1.5.1
 	github.com/stretchr/testify v1.11.1
 )
 
