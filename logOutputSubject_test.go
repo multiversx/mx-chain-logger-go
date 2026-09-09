@@ -121,7 +121,7 @@ func TestLogOutputSubject_OutputShouldProduceCorrectString(t *testing.T) {
 		Args: []interface{}{
 			"int", 1,
 			"ASCII string", "plain text \n",
-			"non-ASCII string", "Âµs",
+			"non-ASCII string", "µs",
 			"time.Duration", time.Microsecond*4 + time.Nanosecond,
 			"byte slice", []byte("aaa"),
 			"error", errors.New("an error"),
@@ -132,11 +132,45 @@ func TestLogOutputSubject_OutputShouldProduceCorrectString(t *testing.T) {
 
 	los.Output(logLine)
 
-	expectedString := `DEBUG[2022-03-30 15:47:52.000]   message                                  int = 1 ASCII string = plain text 
- non-ASCII string = c382c2b573 time.Duration = 4.001µs byte slice = 616161 error = an error bool = true 
+ expectedString := `DEBUG[2022-03-30 15:47:52.000]   message                                  int = 1 ASCII string = plain text 
+ non-ASCII string = µs time.Duration = 4.001µs byte slice = 616161 error = an error bool = true 
 `
 
 	assert.Equal(t, expectedString, string(writtenData))
+}
+
+func TestLogOutputSubject_OutputShouldPreserveElapsedTimeValueWithTimeSuffix(t *testing.T) {
+	t.Parallel()
+
+	los := logger.NewLogOutputSubject()
+	var writtenData []byte
+	_ = los.AddObserver(
+		&mock.WriterStub{
+			WriteCalled: func(p []byte) (n int, err error) {
+				writtenData = p
+				return 0, nil
+			},
+		},
+		&mock.FormatterMock{},
+	)
+
+	elapsed := time.Microsecond*29 + time.Nanosecond*175
+	logLine := &logger.LogLine{
+		LoggerName:  "",
+		Correlation: proto.LogCorrelationMessage{},
+		Message:     "elapsed time to processMiniBlocksToMe",
+		LogLevel:    logger.LogDebug,
+		Args: []interface{}{
+			"time [s]", elapsed,
+		},
+		Timestamp: time.Date(2026, 02, 26, 7, 52, 39, 43_000_000, time.Local),
+	}
+
+	los.Output(logLine)
+
+	output := string(writtenData)
+	assert.Contains(t, output, "time [s] = 29.175µs")
+	assert.NotContains(t, output, "c2b573")
 }
 
 func TestLogOutputSubject_OutputCalledConcurrentShouldWork(t *testing.T) {
@@ -310,8 +344,13 @@ func TestLogOutputSubject_variousTypesOfStrings(t *testing.T) {
 
 	// emojis
 	emojiString := "🏓🏓🏓"
-	expectedRes = "f09f8f93f09f8f93f09f8f93"
+	expectedRes = "🏓🏓🏓"
 	testArgFormat(t, emojiString, expectedRes)
+
+	// valid UTF-8 non-ASCII text should stay readable
+	utf8String := "90.747µs"
+	expectedRes = "90.747µs"
+	testArgFormat(t, utf8String, expectedRes)
 
 	// a data field
 	dataField := "ESDTTransfer@6y7u8i@1000"
